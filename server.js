@@ -1,7 +1,24 @@
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
+const os = require('os');
 const { Server } = require('socket.io');
+
+function getLocalIp() {
+  const interfaces = os.networkInterfaces();
+  for (const iface of Object.values(interfaces)) {
+    if (!iface) continue;
+    for (const entry of iface) {
+      if (entry.family === 'IPv4' && !entry.internal) {
+        return entry.address;
+      }
+    }
+  }
+  process.stderr.write('Warning: no LAN IPv4 address found, falling back to 127.0.0.1\n');
+  return '127.0.0.1';
+}
+
+const LOCAL_IP = getLocalIp();
 
 const PORT = process.env.PORT || 3000;
 
@@ -34,4 +51,6 @@ io.on('connection', (socket) => {
 
 server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
+  console.log(`Dashboard: https://${LOCAL_IP}:${PORT}`);
+  console.log(`Phone:     https://${LOCAL_IP}:${PORT}/phone`);
 });
