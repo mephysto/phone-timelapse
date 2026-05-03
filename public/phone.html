@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Phone Timelapse</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #111;
+      color: #fff;
+      font-family: -apple-system, sans-serif;
+    }
+
+    #arm-btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px 48px;
+      font-size: 22px;
+      font-weight: 600;
+      background: #fff;
+      color: #111;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    #status {
+      display: none;
+      position: absolute;
+      bottom: 40px;
+      left: 0;
+      right: 0;
+      font-size: 16px;
+      text-align: center;
+      padding: 16px;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+
+    #portrait-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      color: #fff;
+      font-size: 20px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 32px;
+      z-index: 100;
+    }
+
+    @media (orientation: portrait) {
+      #portrait-overlay {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button id="arm-btn">Arm Camera</button>
+  <div id="status"></div>
+  <div id="portrait-overlay">Please rotate your phone to landscape mode.</div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    socket.on('connect', () => {
+      console.log('Phone connected', socket.id);
+      const status = document.getElementById('status');
+      status.textContent = 'Waiting for session to start…';
+      status.style.display = 'block';
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Phone disconnected');
+    });
+  </script>
+</body>
+</html>
