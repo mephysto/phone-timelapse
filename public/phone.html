@@ -139,6 +139,24 @@
       transition: none;
     }
 
+    /* Reconnecting banner */
+    #reconnecting-banner {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 10px;
+      background: #f44336;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      z-index: 50;
+    }
+
+    #reconnecting-banner.visible { display: block; }
+
     /* Portrait overlay */
     #portrait-overlay {
       display: none;
@@ -181,6 +199,7 @@
     </div>
   </div>
 
+  <div id="reconnecting-banner">Reconnecting…</div>
   <div id="frame-saved-overlay">Frame saved</div>
   <div id="portrait-overlay">↺ Rotate your phone to landscape</div>
 
@@ -272,16 +291,26 @@
       socket.emit('stop-session');
     });
 
-    const socket = io();
+    const reconnectingBanner = document.getElementById('reconnecting-banner');
+
+    const socket = io({
+      reconnectionDelay:    1_000,
+      reconnectionDelayMax: 30_000,
+      reconnectionFactor:   2,
+      reconnectionAttempts: Infinity,
+    });
 
     socket.on('connect', () => {
       console.log('Phone connected', socket.id);
       statusDot.className = 'connected';
+      reconnectingBanner.classList.remove('visible');
     });
 
     socket.on('disconnect', () => {
       console.log('Phone disconnected');
       statusDot.className = 'disconnected';
+      reconnectingBanner.classList.add('visible');
+      capturing = false;
     });
 
     socket.on('status-update', (session) => {

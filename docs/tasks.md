@@ -58,7 +58,7 @@ Implementation order. Each task should be completable and testable independently
 - `canvas.toBlob()` → send binary via `socket.emit('frame', buffer)`
 - **Done when:** Server receives binary data on `frame` event when `capture` is emitted
 
-### T-09 · Phone status UI
+### T-09 · Phone status UI ✅
 - Show countdown to next capture (counting down from interval)
 - Show timestamp of last capture ("Last: 14:23:01")
 - Show connection status indicator (green dot = connected, red = reconnecting)
