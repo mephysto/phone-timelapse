@@ -1,15 +1,14 @@
-- [ ] Define the `session` object in `server.js` with all fields from the schema and correct default values
-- [ ] Set `session.interval` default to `30`
-- [ ] Set `session.format` default to `'jpg'`
-- [ ] Set `session.status` default to `'idle'`
-- [ ] Set `session.gaps` default to `[]`
-- [ ] Set all timestamp fields (`startTime`, `lastCaptureAt`) default to `null`
-- [ ] Write a `startSession(options)` function that returns early with an error indicator if `status` is `'running'`
-- [ ] In `startSession()`, set `status` to `'running'` and `startTime` to `new Date()`
-- [ ] In `startSession()`, reset `frameCount`, `expectedFrames`, `gaps`, and `lastCaptureAt` to their initial values
-- [ ] In `startSession()`, apply any provided `options` (interval, format, scheduledStart, scheduledEnd)
-- [ ] Write a `stopSession()` function that returns early with an error indicator if `status` is `'idle'`
-- [ ] In `stopSession()`, set `status` to `'stopped'`
-- [ ] Verify that calling `startSession()` after `stopSession()` correctly begins a new session with reset counters
-- [ ] Verify that calling `startSession()` twice in a row without stopping does not change `startTime` on the second call
-- [ ] Write a unit test (or manual verification steps) confirming the idle → running → stopped → running transition
+- [x] Define the `session` object in `server.js` with all fields from the schema and correct default values
+- [x] Set `session.interval` default to `30`
+- [x] Set `session.format` default to `'jpg'`
+- [x] Set `session.status` default to `'idle'`
+- [x] Set `session.gaps` default to `[]`
+- [x] Set all timestamp fields (`startTime`, `lastCaptureAt`) default to `null`
+- [x] Write a `startSession(options)` function that returns early with `{ ok: false, reason }` if `status` is `'running'`
+- [x] In `startSession()`, set `status` to `'running'` and `startTime` to `new Date()`
+- [x] In `startSession()`, reset `frameCount`, `expectedFrames`, `gaps`, and `lastCaptureAt` to their initial values
+- [x] In `startSession()`, apply any provided `options` (interval, format, scheduledStart, scheduledEnd)
+- [x] Write a `stopSession()` function that returns `{ ok: false, reason }` if `status` is `'idle'`
+- [x] In `stopSession()`, set `status` to `'stopped'`
+- [x] Write a `getSession()` function that returns a shallow copy of the session object
+- [x] Verify state transitions with inline node test: idle→running, double-start rejected, running→stopped, stopped→running resets counters, idle stop rejected — all pass

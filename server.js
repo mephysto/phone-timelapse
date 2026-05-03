@@ -37,6 +37,55 @@ Then restart the server.`);
 const key = fs.readFileSync('key.pem');
 const cert = fs.readFileSync('cert.pem');
 
+// ── Session state ─────────────────────────────────────────────────────────────
+
+const session = {
+  status:         'idle',   // 'idle' | 'running' | 'stopped'
+  startTime:      null,     // Date | null
+  scheduledStart: null,     // "HH:MM" string | null
+  scheduledEnd:   null,     // "HH:MM" string | null
+  interval:       30,       // seconds
+  format:         'jpg',    // 'png' | 'jpg'
+  outputDir:      '',       // absolute path, set at session start by T-14
+  frameCount:     0,
+  expectedFrames: 0,
+  gaps:           [],       // [{ from: Date, to: Date, missed: number }]
+  lastCaptureAt:  null,     // Date | null
+};
+
+function startSession(options = {}) {
+  if (session.status === 'running') {
+    return { ok: false, reason: 'Session already running' };
+  }
+  if (options.interval  !== undefined) session.interval        = options.interval;
+  if (options.format    !== undefined) session.format          = options.format;
+  if (options.scheduledStart !== undefined) session.scheduledStart = options.scheduledStart;
+  if (options.scheduledEnd   !== undefined) session.scheduledEnd   = options.scheduledEnd;
+
+  session.status        = 'running';
+  session.startTime     = new Date();
+  session.frameCount    = 0;
+  session.expectedFrames = 0;
+  session.gaps          = [];
+  session.lastCaptureAt = null;
+  session.outputDir     = '';
+  return { ok: true };
+}
+
+function stopSession() {
+  if (session.status === 'idle') {
+    return { ok: false, reason: 'No session is running' };
+  }
+  session.status = 'stopped';
+  return { ok: true };
+}
+
+function getSession() {
+  return { ...session };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 const app = express();
 const server = https.createServer({ key, cert }, app);
 const io = new Server(server, { maxHttpBufferSize: 10e6 });
