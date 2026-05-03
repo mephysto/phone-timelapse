@@ -47,7 +47,7 @@ Implementation order. Each task should be completable and testable independently
 - Handle permission denied gracefully (show error message)
 - **Done when:** Tapping the button shows the rear camera feed full-screen on iPhone
 
-### T-07 · NoSleep wake-lock
+### T-07 · NoSleep wake-lock ✅
 - On the same tap as camera access (must be within a user gesture): start a 1×1 silent looping `<video>` element (`nosleep.mp4`)
 - Generate or include a minimal valid MP4 file for `public/nosleep.mp4`
 - **Done when:** Screen does not dim/lock during an extended session on the phone (test 5 min)

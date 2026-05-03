@@ -87,6 +87,7 @@
   <video id="nosleep" autoplay loop muted playsinline src="/nosleep.mp4"
          style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;"></video>
   <video id="camera" autoplay muted playsinline></video>
+  <canvas id="capture-canvas" style="display:none;"></canvas>
   <button id="arm-btn">Arm Camera</button>
   <div id="status"></div>
   <div id="portrait-overlay">↺ Rotate your phone to landscape</div>
@@ -94,6 +95,11 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     let stream = null;
+    let capturing = false;
+
+    const video  = document.getElementById('camera');
+    const canvas = document.getElementById('capture-canvas');
+    const ctx    = canvas.getContext('2d');
 
     function showStatus(message) {
       const el = document.getElementById('status');
@@ -135,6 +141,39 @@
 
     socket.on('disconnect', () => {
       console.log('Phone disconnected');
+    });
+
+    socket.on('capture', ({ format }) => {
+      if (capturing) return;
+      if (video.readyState < 2) return;
+
+      capturing = true;
+      canvas.width  = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0);
+
+      const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
+      const quality  = format === 'jpg' ? 0.85 : undefined;
+
+      const onBlob = (blob) => {
+        if (!blob) {
+          console.error('toBlob returned null');
+          capturing = false;
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          socket.emit('frame', reader.result);
+          capturing = false;
+        };
+        reader.readAsArrayBuffer(blob);
+      };
+
+      if (quality !== undefined) {
+        canvas.toBlob(onBlob, mimeType, quality);
+      } else {
+        canvas.toBlob(onBlob, mimeType);
+      }
     });
   </script>
 </body>

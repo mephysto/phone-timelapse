@@ -1,16 +1,16 @@
-- [ ] Add a `<canvas id="capture-canvas">` element to `phone.html` with `display: none`
-- [ ] In `phone.js`, obtain references to `<video>`, `<canvas>`, and its 2D context
-- [ ] Declare a `capturing` boolean flag, initialised to `false`
-- [ ] Add a `socket.on('capture', ...)` listener in `phone.js`
-- [ ] Inside the listener, return early if `capturing` is `true`
-- [ ] Inside the listener, return early if `video.readyState < 2`
-- [ ] Set `capturing = true` at the start of each encode
-- [ ] Set `canvas.width = video.videoWidth` and `canvas.height = video.videoHeight` before drawing
-- [ ] Call `ctx.drawImage(video, 0, 0)` to snapshot the current frame
-- [ ] Determine the MIME type from the `format` field in the event payload (`'jpg'` → `'image/jpeg'`, otherwise `'image/png'`)
-- [ ] Call `canvas.toBlob(callback, mimeType, quality)` — quality is `0.85` for JPEG, omitted entirely for PNG
-- [ ] Inside the `toBlob` callback, handle a `null` blob by logging an error and resetting `capturing = false`
-- [ ] Convert the blob to ArrayBuffer using FileReader for iOS 11+ compatibility: `const reader = new FileReader(); reader.onload = () => { socket.emit('frame', reader.result); capturing = false; }; reader.readAsArrayBuffer(blob)`
-- [ ] Emit the `ArrayBuffer` to the server via `socket.emit('frame', buffer)`
-- [ ] Reset `capturing = false` after the emit
-- [ ] Manually test by opening browser devtools on the server and logging `socket.on('frame')` payload size
+- [x] Add a `<canvas id="capture-canvas">` element to `phone.html` with `display: none`
+- [x] In the page script, obtain references to `<video id="camera">`, `<canvas id="capture-canvas">`, and its 2D context
+- [x] Declare a `capturing` boolean flag, initialised to `false`
+- [x] Add a `socket.on('capture', ...)` listener in the page script
+- [x] Inside the listener, return early if `capturing` is `true`
+- [x] Inside the listener, return early if `video.readyState < 2`
+- [x] Set `capturing = true` at the start of each encode
+- [x] Set `canvas.width = video.videoWidth` and `canvas.height = video.videoHeight` before drawing
+- [x] Call `ctx.drawImage(video, 0, 0)` to snapshot the current frame
+- [x] Determine the MIME type from the `format` field (`'jpg'` → `'image/jpeg'`, otherwise `'image/png'`)
+- [x] Call `canvas.toBlob(callback, mimeType, quality)` — quality is `0.85` for JPEG, omitted entirely for PNG
+- [x] Inside the `toBlob` callback, handle a `null` blob by logging an error and resetting `capturing = false`
+- [x] Convert the blob to ArrayBuffer using FileReader for iOS 11+ compatibility
+- [x] Emit the `ArrayBuffer` to the server via `socket.emit('frame', reader.result)` inside `reader.onload`
+- [x] Reset `capturing = false` after the emit
+- [ ] Manually test by emitting `capture` from server devtools and logging the `frame` payload size ← MANUAL: requires live server + device
