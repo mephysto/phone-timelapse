@@ -1,18 +1,18 @@
-- [ ] Create `server.js` at the project root
-- [ ] Add `require` statements for `express`, `https`, `fs`, and `socket.io`
-- [ ] At startup, check for `cert.pem` and `key.pem` at project root; if missing, print mkcert setup instructions and `process.exit(1)`
-- [ ] Load cert and key: `const key = fs.readFileSync('key.pem')` and `const cert = fs.readFileSync('cert.pem')`
-- [ ] Create an Express `app` instance
-- [ ] Create an `https.Server` using `https.createServer({ key, cert }, app)`
-- [ ] Attach a `socket.io` `Server` instance to the HTTPS server using `new Server(server, { maxHttpBufferSize: 10e6 })`
-- [ ] Register `express.static('public')` as middleware on the Express app
-- [ ] Define `PORT` as `process.env.PORT || 3000`
-- [ ] Call `server.listen(PORT, callback)` with a callback that logs the listening port
-- [ ] Add an `io.on('connection', ...)` handler that logs the connecting socket's ID
-- [ ] Inside the connection handler, add a `socket.on('disconnect', ...)` handler that logs the disconnecting socket's ID
-- [ ] Create `public/index.html` as a minimal placeholder (one line of HTML is sufficient)
-- [ ] Run `node server.js` and confirm no errors appear in the terminal
-- [ ] Confirm the terminal prints the "listening on port 3000" message
-- [ ] Open `http://localhost:3000` in a browser and confirm HTTP 200 is returned with the placeholder HTML
-- [ ] Open a second browser tab, load the Socket.IO client script from `http://localhost:3000/socket.io/socket.io.js`, connect manually, and confirm the server logs "Client connected"
-- [ ] Close that tab and confirm the server logs "Client disconnected"
+- [x] Create `server.js` at the project root
+- [x] Add `require` statements for `express`, `https`, `fs`, and `socket.io`
+- [x] At startup, check for `cert.pem` and `key.pem` at project root; if missing, print mkcert setup instructions and `process.exit(1)`
+- [x] Load cert and key: `const key = fs.readFileSync('key.pem')` and `const cert = fs.readFileSync('cert.pem')`
+- [x] Create an Express `app` instance
+- [x] Create an `https.Server` using `https.createServer({ key, cert }, app)`
+- [x] Attach a `socket.io` `Server` instance to the HTTPS server using `new Server(server, { maxHttpBufferSize: 10e6 })`
+- [x] Register `express.static('public')` as middleware on the Express app
+- [x] Define `PORT` as `process.env.PORT || 3000`
+- [x] Call `server.listen(PORT, callback)` with a callback that logs the listening port
+- [x] Add an `io.on('connection', ...)` handler that logs the connecting socket's ID
+- [x] Inside the connection handler, add a `socket.on('disconnect', ...)` handler that logs the disconnecting socket's ID
+- [x] Create `public/index.html` as a minimal placeholder (one line of HTML is sufficient)
+- [ ] Run `node server.js` and confirm no errors appear in the terminal ← MANUAL: requires mkcert certs
+- [ ] Confirm the terminal prints the "listening on port 3000" message ← MANUAL: requires mkcert certs
+- [ ] Open `http://localhost:3000` in a browser and confirm HTTP 200 is returned with the placeholder HTML ← MANUAL: requires mkcert certs
+- [ ] Open a second browser tab, load the Socket.IO client script from `http://localhost:3000/socket.io/socket.io.js`, connect manually, and confirm the server logs "Client connected" ← MANUAL: requires mkcert certs
+- [ ] Close that tab and confirm the server logs "Client disconnected" ← MANUAL: requires mkcert certs
