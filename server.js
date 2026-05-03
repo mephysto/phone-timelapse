@@ -53,6 +53,25 @@ const session = {
   lastCaptureAt:  null,     // Date | null
 };
 
+let phoneSocket  = null;
+let captureTimer = null;
+
+function startCaptureScheduler() {
+  if (captureTimer !== null) return;
+  const intervalMs = session.interval * 1_000;
+  captureTimer = setInterval(() => {
+    session.expectedFrames++;
+    if (phoneSocket) {
+      phoneSocket.emit('capture', { format: session.format });
+    }
+  }, intervalMs);
+}
+
+function stopCaptureScheduler() {
+  clearInterval(captureTimer);
+  captureTimer = null;
+}
+
 function startSession(options = {}) {
   if (session.status === 'running') {
     return { ok: false, reason: 'Session already running' };
@@ -69,6 +88,7 @@ function startSession(options = {}) {
   session.gaps          = [];
   session.lastCaptureAt = null;
   session.outputDir     = '';
+  startCaptureScheduler();
   return { ok: true };
 }
 
@@ -76,6 +96,7 @@ function stopSession() {
   if (session.status === 'idle') {
     return { ok: false, reason: 'No session is running' };
   }
+  stopCaptureScheduler();
   session.status = 'stopped';
   return { ok: true };
 }
@@ -105,8 +126,18 @@ app.get('/qr', async (req, res) => {
 
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
+
+  const referer = socket.handshake.headers.referer || '';
+  if (referer.endsWith('/phone')) {
+    phoneSocket = socket;
+    console.log('Phone socket registered:', socket.id);
+  }
+
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
+    if (socket === phoneSocket) {
+      phoneSocket = null;
+    }
   });
 });
 

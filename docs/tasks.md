@@ -75,7 +75,7 @@ Implementation order. Each task should be completable and testable independently
 
 ## Phase 3 — Session Engine (Server)
 
-### T-11 · Session state management
+### T-11 · Session state management ✅
 - Define session state object (see design.md)
 - `startSession()` and `stopSession()` functions
 - Validate that a session isn't started if one is already running

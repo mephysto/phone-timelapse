@@ -1,16 +1,16 @@
-- [ ] Declare a `phoneSocket` variable in `server.js`, initialised to `null`
-- [ ] In the Socket.IO connection handler, detect when the connecting socket is from the phone page (e.g. by URL or a handshake query param) and assign it to `phoneSocket`
-- [ ] Clear `phoneSocket` (set to `null`) when the phone socket disconnects
-- [ ] Declare a `captureTimer` variable in `server.js`, initialised to `null`
-- [ ] Write a `startCaptureScheduler()` function that returns early if `captureTimer` is not `null`
-- [ ] In `startCaptureScheduler()`, read `session.interval` and convert to milliseconds
-- [ ] In `startCaptureScheduler()`, use `setInterval` to emit `capture` to `phoneSocket` at the computed interval
-- [ ] In the interval callback, increment `session.expectedFrames` on every tick
-- [ ] In the interval callback, only emit `capture` if `phoneSocket` is not `null`
-- [ ] Store the return value of `setInterval` in `captureTimer`
-- [ ] Write a `stopCaptureScheduler()` function that calls `clearInterval(captureTimer)` and sets `captureTimer = null`
-- [ ] Call `startCaptureScheduler()` from within `startSession()` after the session state has been updated
-- [ ] Call `stopCaptureScheduler()` from within `stopSession()`
-- [ ] Verify that the first `capture` event arrives after one full interval (not immediately on session start)
-- [ ] Verify that calling `startSession()` twice does not result in two schedulers running simultaneously
-- [ ] Verify that after `stopSession()` no further `capture` events are emitted to the phone
+- [x] Declare a `phoneSocket` variable in `server.js`, initialised to `null`
+- [x] In the Socket.IO connection handler, detect when the connecting socket is from the phone page (via `socket.handshake.headers.referer?.endsWith('/phone')`) and assign it to `phoneSocket`
+- [x] Clear `phoneSocket` (set to `null`) when the phone socket disconnects
+- [x] Declare a `captureTimer` variable in `server.js`, initialised to `null`
+- [x] Write a `startCaptureScheduler()` function that returns early if `captureTimer` is not `null`
+- [x] In `startCaptureScheduler()`, read `session.interval` and convert to milliseconds
+- [x] In `startCaptureScheduler()`, use `setInterval` to emit `capture` to `phoneSocket` at the computed interval
+- [x] In the interval callback, increment `session.expectedFrames` on every tick
+- [x] In the interval callback, only emit `capture` if `phoneSocket` is not `null`
+- [x] Store the return value of `setInterval` in `captureTimer`
+- [x] Write a `stopCaptureScheduler()` function that calls `clearInterval(captureTimer)` and sets `captureTimer = null`
+- [x] Call `startCaptureScheduler()` from within `startSession()` after the session state has been updated
+- [x] Call `stopCaptureScheduler()` from within `stopSession()`
+- [ ] Verify that the first `capture` event arrives after one full interval (not immediately on session start) ← MANUAL: requires live server + phone
+- [ ] Verify that calling `startSession()` twice does not result in two schedulers running simultaneously ← MANUAL: verified by guard code (captureTimer !== null check)
+- [ ] Verify that after `stopSession()` no further `capture` events are emitted to the phone ← MANUAL: requires live server + phone
