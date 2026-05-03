@@ -66,7 +66,7 @@ Implementation order. Each task should be completable and testable independently
 - Stop button emits `stop-session`
 - **Done when:** All UI elements update correctly during a test capture sequence
 
-### T-10 · WebSocket reconnection
+### T-10 · WebSocket reconnection ✅
 - On disconnect: show "Reconnecting…" banner; attempt reconnect with exponential backoff (1s, 2s, 4s… max 30s)
 - On reconnect: hide banner, resume listening for `capture` events
 - **Done when:** Toggling WiFi on the phone causes the banner to appear then disappear; captures resume
