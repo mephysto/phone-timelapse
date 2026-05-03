@@ -1,0 +1,14 @@
+- [ ] Add a `<div id="preview-placeholder">No frames yet</div>` element inside `#panel-preview`
+- [ ] Add an `<img id="latest-frame" alt="Latest captured frame" hidden style="max-width:100%;display:block;">` element inside `#panel-preview`
+- [ ] In `server.js`, declare a module-level `let latestFramePath = null` variable
+- [ ] In the frame-receiver handler (T-13), set `latestFramePath` to the saved file path after writing succeeds
+- [ ] Add a `GET /latest-frame` route that returns `res.sendStatus(404)` if `latestFramePath` is null, otherwise calls `res.sendFile(latestFramePath)`
+- [ ] Write a `updatePreview(timestamp)` function that sets `img.src = /latest-frame?t=${timestamp}` and shows the `<img>` while removing or hiding `#preview-placeholder`
+- [ ] Add a `socket.on('frame-saved', (data) => updatePreview(data.timestamp))` handler
+- [ ] In the `status-update` handler, if `session.lastCaptureAt` is non-null, call `updatePreview(new Date(session.lastCaptureAt).getTime())`
+- [ ] Verify `GET /latest-frame` returns 404 before any frame is saved
+- [ ] Verify the placeholder text "No frames yet" is visible on load with no frames
+- [ ] Verify the thumbnail updates to show the latest frame after each `frame-saved` event during a test session
+- [ ] Verify in DevTools Network tab that a new request to `/latest-frame?t=...` is made after each `frame-saved` event with a unique `t` value
+- [ ] Verify the image does not overflow the panel width at any viewport size
+- [ ] Verify that reloading the dashboard mid-session shows the last captured frame immediately

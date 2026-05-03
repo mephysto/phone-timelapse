@@ -1,0 +1,33 @@
+- [ ] Verify FFmpeg is installed in WSL: run `ffmpeg -version` and confirm it exits without error
+- [ ] Confirm Node.js version is ≥ 18: run `node --version`
+- [ ] Delete or rename any existing `./output/` folder to ensure a clean test run
+- [ ] Start the server: `node server.js`; confirm the console prints the LAN IP and port
+- [ ] Open `http://<lan-ip>:3000` in the Windows browser; confirm the dashboard loads with no console errors
+- [ ] Open `/qr` in the browser; confirm the QR code image renders
+- [ ] Scan the QR code with the iPhone camera; confirm Safari opens the phone page
+- [ ] On the phone page, confirm the camera permission prompt appears and accept it
+- [ ] Confirm the camera preview is visible on the phone page (live video feed)
+- [ ] On the dashboard, set the capture interval to 10 seconds and format to JPG
+- [ ] Press Start on the dashboard; confirm session status changes to "Running"
+- [ ] Wait for 3 frames to be saved; confirm the frame count in the dashboard increments correctly
+- [ ] Confirm the disk usage counter on the dashboard is non-zero and increasing
+- [ ] Open `/latest-frame` in a browser tab; confirm it serves the most recent frame image
+- [ ] Simulate a disconnection: put the iPhone into aeroplane mode for 30 seconds
+- [ ] Confirm the dashboard shows the phone as disconnected (status indicator changes)
+- [ ] Turn aeroplane mode off; confirm the phone page reconnects automatically
+- [ ] Confirm the dashboard shows a gap entry after the reconnection
+- [ ] Wait for 3 more frames after reconnection; confirm frame count resumes from where it left off
+- [ ] Test scheduled auto-stop: set the scheduled end time to 1 minute from now; confirm the session stops automatically
+- [ ] If auto-stop is not tested above: press Stop manually on the dashboard; confirm session status changes to "Stopped"
+- [ ] Verify `./output/YYYY-MM-DD/` directory was created with the correct date
+- [ ] Confirm frame files exist in the output directory with sequential zero-padded names (e.g. `frame_0001.jpg`)
+- [ ] Count the frame files in the directory; confirm the count matches `frameCount` in the dashboard
+- [ ] Open `./output/YYYY-MM-DD/session.log`; confirm it is valid JSON containing startTime, endTime, frameCount, interval, and gaps array
+- [ ] Confirm the gaps array has at least one entry corresponding to the aeroplane-mode disconnection
+- [ ] Run the FFmpeg command against the captured frames (adjust extension to `.jpg` if needed)
+- [ ] Confirm FFmpeg exits with code 0 and no error messages
+- [ ] Confirm `timelapse.mp4` was created and is non-zero in size
+- [ ] Open `timelapse.mp4` in a media player; confirm it plays without visual corruption and the duration is approximately correct
+- [ ] Check the server console for any unhandled exceptions or error stack traces; note any found
+- [ ] Test auto-start: restart the server, set scheduled start to 1 minute in the future, wait; confirm session starts automatically without pressing Start
+- [ ] Document any bugs, unexpected behaviour, or discrepancies found during the test as comments or notes against the relevant checklist item above

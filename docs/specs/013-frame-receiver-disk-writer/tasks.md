@@ -1,0 +1,19 @@
+- [ ] Declare a `latestFramePath` variable in `server.js`, initialised to `null`
+- [ ] Attach a `'frame'` event listener to `phoneSocket` when it connects
+- [ ] In the `frame` handler, return early if `session.status` is not `'running'`
+- [ ] Compute `frameNum` as `session.frameCount + 1` before any async operation
+- [ ] Generate a single `timestamp` ISO string (via `new Date().toISOString()`) to reuse in both emitted events
+- [ ] Zero-pad `frameNum` to 4 digits using `String(frameNum).padStart(4, '0')`
+- [ ] Construct the output filename as `frame_<padded>.<session.format>`
+- [ ] Construct the full file path using `path.join(session.outputDir, filename)`
+- [ ] Write the received `data` (Buffer) to disk using `fs.promises.writeFile(filePath, data)`
+- [ ] On successful write, set `session.frameCount = frameNum`
+- [ ] On successful write, set `session.lastCaptureAt = new Date(timestamp)`
+- [ ] On successful write, set `latestFramePath = filePath`
+- [ ] On successful write, emit `frame-ack` to `phoneSocket` with `{ frameNum, timestamp }`
+- [ ] On successful write, emit `frame-saved` to the dashboard room with `{ frameNum, timestamp, path: filePath }`
+- [ ] On write failure, log the error to the console
+- [ ] On write failure, do not increment `session.frameCount` and do not emit `frame-ack`
+- [ ] Ensure dashboard sockets join a `'dashboard'` room on connect so `io.to('dashboard').emit(...)` works
+- [ ] Verify frame files appear on disk with correct sequential names after test captures
+- [ ] Verify frame numbers in emitted events match the filenames on disk

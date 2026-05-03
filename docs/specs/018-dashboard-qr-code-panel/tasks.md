@@ -1,0 +1,14 @@
+- [ ] Add `qrcode` to `package.json` dependencies and run `npm install`
+- [ ] In `server.js`, import `qrcode` with `require('qrcode')`
+- [ ] Detect the PC's LAN IP at server startup (reuse T-03 local IP detection result)
+- [ ] Build the phone page URL as `http://${localIp}:${PORT}/phone`
+- [ ] Generate a QR code PNG buffer from that URL using `qrcode.toBuffer(url, { type: 'png', width: 300 })`
+- [ ] Cache the generated buffer in a module-level variable so it is not regenerated on every request
+- [ ] Add a `GET /qr` route that sets `Content-Type: image/png` and sends the cached buffer
+- [ ] If LAN IP detection fails, log a warning and fall back to `localhost` for the QR code URL
+- [ ] In `dashboard.html`, add an `<img src="/qr" alt="QR code for phone camera page" width="200" height="200">` inside `#panel-qr`
+- [ ] Add the label text "Scan to open camera on your phone" as a `<p>` element below the image
+- [ ] Add the note text "Phone must be on the same WiFi network as this PC" as a second `<p>` element below the label
+- [ ] Load `http://localhost:3000/qr` directly in a browser and confirm a PNG is returned
+- [ ] Verify the QR code image renders visibly in the dashboard panel (not a broken image icon)
+- [ ] Scan the QR code with a phone on the same WiFi network and confirm `phone.html` opens

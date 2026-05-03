@@ -1,0 +1,18 @@
+- [ ] Create `public/phone.html` with a standard HTML5 boilerplate (`<!DOCTYPE html>`, `<html>`, `<head>`, `<body>`)
+- [ ] Add `<meta name="viewport" content="width=device-width, initial-scale=1">` to the `<head>`
+- [ ] Add `<meta name="apple-mobile-web-app-capable" content="yes">` to suppress Safari chrome when added to home screen (optional but useful)
+- [ ] Add a `<style>` block that resets `margin`, `padding`, and `box-sizing` on `html` and `body`
+- [ ] Set `html` and `body` to `width: 100%; height: 100%; overflow: hidden` so there are no scrollbars
+- [ ] Set a dark `background-color` on `body` (e.g., `#111`)
+- [ ] Add a `<button id="arm-btn">` with text "Arm Camera"
+- [ ] Position `#arm-btn` absolutely, centred using `top: 50%; left: 50%; transform: translate(-50%, -50%)`
+- [ ] Apply `-webkit-tap-highlight-color: transparent` and `user-select: none` to `#arm-btn`
+- [ ] Add a `<div id="status">` element and set it to `display: none` in CSS
+- [ ] Add a `<script src="/socket.io/socket.io.js"></script>` tag before the closing `</body>`
+- [ ] Add an inline `<script>` that calls `const socket = io()` to connect to the server
+- [ ] Add a `console.log('Phone connected')` inside the script so connection can be confirmed in Web Inspector
+- [ ] Restart the server and visit `/phone` in the desktop browser — confirm the page renders without errors
+- [ ] Check browser DevTools Network tab: confirm `/socket.io/socket.io.js` loads with HTTP 200
+- [ ] Confirm the server terminal logs "Client connected" when the phone page loads
+- [ ] Open the page on the iPhone via the local IP URL and confirm the button is visible and centred
+- [ ] Open Safari Web Inspector (via Mac → Develop menu) and confirm no console errors on the phone

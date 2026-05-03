@@ -1,0 +1,14 @@
+- [ ] Declare `let latestFramePath = null` at module scope in `server.js`
+- [ ] In the frame-write completion callback (T-13), assign `latestFramePath = absolutePathToSavedFrame` after the write succeeds
+- [ ] Register `GET /latest-frame` route in `server.js` before the catch-all or static middleware
+- [ ] In the route handler, return 404 with body `"No frames saved yet"` if `latestFramePath` is null
+- [ ] Derive the MIME type from `latestFramePath`'s file extension (`.png` → `image/png`, `.jpg` / `.jpeg` → `image/jpeg`)
+- [ ] Set the `Content-Type` response header explicitly before calling `res.sendFile`
+- [ ] Call `res.sendFile(latestFramePath)` using an absolute path (pass `{ root: '/' }` or ensure the path is already absolute)
+- [ ] Add an error callback to `res.sendFile` that catches `ENOENT` and returns 404 with body `"Frame file not found"`
+- [ ] Add an error callback branch for other `fs` errors that returns 500 with the error message
+- [ ] Manual test: hit `/latest-frame` before any session starts; confirm 404 response
+- [ ] Manual test: start a session, wait for one frame to be saved; confirm `/latest-frame` returns the frame image
+- [ ] Manual test: stop the session; confirm `/latest-frame` still returns the last frame (not 404)
+- [ ] Manual test: start a new session; confirm `/latest-frame` updates to the new session's first frame
+- [ ] Manual test: open `/latest-frame` URL in browser tab; confirm image renders without CORS or MIME errors

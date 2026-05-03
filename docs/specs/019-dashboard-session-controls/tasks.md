@@ -1,0 +1,16 @@
+- [ ] Add a `<span id="status-badge" data-status="idle">Idle</span>` element inside `#panel-status`
+- [ ] Add a `<button id="btn-start">Start</button>` inside `#panel-status`
+- [ ] Add a `<button id="btn-stop" disabled>Stop</button>` inside `#panel-status`
+- [ ] Write a `renderControls(status)` function that sets `btnStart.disabled`, `btnStop.disabled`, `badge.dataset.status`, and `badge.textContent` based on the status string
+- [ ] Add a click listener on `#btn-start` that emits `socket.emit('start-session', {})`
+- [ ] Add a click listener on `#btn-stop` that emits `socket.emit('stop-session', {})`
+- [ ] Call `renderControls(session.status)` inside the `status-update` handler
+- [ ] Add a `socket.on('session-started', ...)` handler that sets `session.status = 'running'` and calls `renderControls`
+- [ ] Add a `socket.on('session-ended', ...)` handler that sets `session.status = 'stopped'` and calls `renderControls`
+- [ ] Add CSS rules so `button:disabled` has reduced opacity and `cursor: not-allowed`
+- [ ] Add CSS rules to style the badge differently for each `data-status` value (`idle`, `running`, `stopped`)
+- [ ] Verify that with `session.status === 'idle'`, Start is enabled and Stop is disabled in the browser
+- [ ] Verify clicking Start emits `start-session` (check server logs or browser DevTools Network WS tab)
+- [ ] Verify that after `session-started` is received, Stop becomes enabled and Start becomes disabled
+- [ ] Verify clicking Stop emits `stop-session`
+- [ ] Verify that after `session-ended` is received, both buttons are disabled

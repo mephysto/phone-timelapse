@@ -1,0 +1,21 @@
+- [ ] Add a `<div id="stat-frame-count">0 frames</div>` element inside `#panel-stats`
+- [ ] Add a `<div id="stat-countdown">—</div>` element inside `#panel-stats`
+- [ ] Add a `<div id="stat-elapsed">00:00:00</div>` element inside `#panel-stats`
+- [ ] Add a `<div id="progress-bar-track">` containing `<div id="progress-bar-fill" style="width:0%">` inside `#panel-stats`
+- [ ] Add CSS to style `#progress-bar-track` as a fixed-height bar and `#progress-bar-fill` with a contrasting background colour
+- [ ] Declare module-level variables: `frameCount`, `expectedFrames`, `intervalSeconds`, `countdownSeconds`, `startTime`, `countdownTimer`, `elapsedTimer`
+- [ ] Write a `stopTimers()` function that calls `clearInterval` on both timer handles and sets them to `null`
+- [ ] Write a `formatElapsed(startTime)` function that returns HH:MM:SS from `(Date.now() - startTime) / 1000`
+- [ ] Write a `startTimers()` function that starts the countdown `setInterval` (1 000 ms, decrements `countdownSeconds`, floors at 0, updates `#stat-countdown`) and the elapsed `setInterval` (1 000 ms, updates `#stat-elapsed`)
+- [ ] Write an `updateProgressBar()` function that computes the percentage and sets `#progress-bar-fill` width
+- [ ] In the `status-update` handler, initialise all stats variables from `session`; call `stopTimers()` before `startTimers()` if status is `"running"`
+- [ ] In the `status-update` handler, reconstruct `countdownSeconds` from `session.lastCaptureAt` using `interval - elapsed` clamped to `[0, interval]`
+- [ ] In the `status-update` handler, if `session.status` is not `"running"`, call `stopTimers()` and set countdown display to "—"
+- [ ] Add a `socket.on('frame-saved', ...)` handler that increments `frameCount`, resets `countdownSeconds` to `intervalSeconds`, updates `#stat-frame-count`, and calls `updateProgressBar()`
+- [ ] Add a `socket.on('session-started', ...)` handler that sets `startTime` from the event payload and calls `startTimers()`
+- [ ] Add a `socket.on('session-ended', ...)` handler that calls `stopTimers()` and sets countdown display to "—"
+- [ ] Verify frame count increments in real time during a test capture session
+- [ ] Verify the countdown resets to `interval` seconds after each `frame-saved` event
+- [ ] Verify the elapsed timer ticks up correctly from session start
+- [ ] Verify the progress bar fills proportionally and does not exceed 100%
+- [ ] Verify that reconnecting mid-session initialises the countdown to the correct partial value

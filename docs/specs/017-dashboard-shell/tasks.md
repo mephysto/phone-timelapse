@@ -1,0 +1,21 @@
+- [ ] Create `public/dashboard.html` with a valid HTML5 document structure and title "Timelapse Dashboard"
+- [ ] Add a `<script src="/socket.io/socket.io.js">` tag to load the Socket.IO client
+- [ ] Add a second `<script>` block (or `dashboard.js` file) for dashboard logic
+- [ ] Add a `<section id="panel-status">` placeholder with a visible heading "Status"
+- [ ] Add a `<section id="panel-preview">` placeholder with a visible heading "Live Preview"
+- [ ] Add a `<section id="panel-stats">` placeholder with a visible heading "Stats"
+- [ ] Add a `<section id="panel-settings">` placeholder with a visible heading "Settings"
+- [ ] Add a `<section id="panel-qr">` placeholder with a visible heading "QR Code"
+- [ ] Add a `<section id="panel-gap-log">` placeholder with a visible heading "Gap Log"
+- [ ] Add a `<section id="panel-summary">` placeholder with `hidden` attribute and a visible heading "Session Summary"
+- [ ] In the JS, call `const socket = io()` to connect to the server on the same origin
+- [ ] Add a `socket.on('status-update', (data) => { console.log('status-update', data); })` handler as a placeholder
+- [ ] On the server side, join each new socket to a `"dashboard"` room inside the `connection` handler
+- [ ] On the server side, emit `status-update` with the current session state to each newly connected dashboard socket
+- [ ] Verify `GET /` returns HTTP 200 with `dashboard.html` in a browser
+- [ ] Verify the browser console logs the `status-update` payload on page load
+- [ ] Verify no JavaScript errors appear in the browser console on a clean load
+- [ ] Verify that closing and reopening the browser tab causes `status-update` to fire again
+- [ ] Add a `<div id="https-warning" hidden>` banner at the top of `dashboard.html` with the text "⚠ Not running over HTTPS — the phone camera page will not work. See the README for mkcert setup instructions."
+- [ ] In the dashboard JS, on page load check `if (location.protocol !== 'https:' && location.hostname !== 'localhost')` and remove the `hidden` attribute from `#https-warning`
+- [ ] Verify the banner appears when the dashboard is opened via plain `http://` and is absent when opened via `https://`

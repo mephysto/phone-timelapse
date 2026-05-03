@@ -1,0 +1,21 @@
+- [ ] Create `README.md` at the project root (`/home/mephysto/projects/phone-timelapse/README.md`)
+- [ ] Write a title line and one-sentence description of what the project does
+- [ ] Write a "Requirements" section: Node.js ≥ 18, FFmpeg, mkcert, iPhone running Safari (iOS 11+), PC and phone on the same WiFi network, estimated free disk space
+- [ ] Note in "Requirements" that FFmpeg is only needed for post-processing, not for running the server
+- [ ] Write an "HTTPS Setup" section before "Running a session": install mkcert, `mkcert -install`, generate cert (`mkcert -key-file key.pem -cert-file cert.pem 192.168.20.28 localhost 127.0.0.1`), install mkcert CA on iPhone
+- [ ] Write a "Generating nosleep.mp4" subsection with the exact FFmpeg command and note to commit the file
+- [ ] Write a "Windows Firewall" note for allowing port 3000
+- [ ] Write a "Setup" section with numbered steps: clone, `npm install`, generate nosleep.mp4, set up HTTPS certs, `node server.js`
+- [ ] Note in "Setup" that WSL users run `node server.js` inside WSL and open the dashboard in a Windows browser
+- [ ] Write a "Connecting the phone" section: open `http://<server-ip>:3000` in a browser, navigate to the QR code, scan with iPhone camera, open the link in Safari
+- [ ] Explain why `localhost` does not work from the phone (different device on the network)
+- [ ] Write a "Running a session" section: configure interval and format on the dashboard, press Start, keep the phone screen on
+- [ ] Write a "Scheduled sessions" section: describe the Scheduled Start and Scheduled End time inputs and what they do
+- [ ] Write an "Output files" section describing the directory structure: `./output/YYYY-MM-DD/frame_0001.png`
+- [ ] Write a "Post-processing" section with the exact FFmpeg command verbatim
+- [ ] Note in "Post-processing" that the framerate (`-framerate 30`) can be adjusted and link to ffmpeg.org for installation
+- [ ] Write a "Disk space estimates" section with a table covering PNG and JPG at the 12-hour / 30-second reference scenario
+- [ ] Include the calculated totals: PNG ~4.3–7.2 GB, JPG ~0.7–2.2 GB
+- [ ] Write a "Known Limitations" section: iOS Safari getUserMedia resolution cap (~1080p), wake-lock not guaranteed on all iOS versions, frames lost if phone screen locks
+- [ ] Write a short "Troubleshooting" section: phone can't reach the server (check WiFi, firewall, use LAN IP), camera permission denied (grant in iOS Settings), screen keeps locking (adjust auto-lock in iOS Settings)
+- [ ] Review the README end-to-end and confirm a new user could follow it without consulting any source file

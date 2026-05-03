@@ -1,0 +1,33 @@
+- [ ] Add `<input id="setting-interval" type="number" min="5" value="30">` with a label inside `#panel-settings`
+- [ ] Add `<input id="setting-start" type="time">` with a label inside `#panel-settings`
+- [ ] Add `<input id="setting-end" type="time">` with a label inside `#panel-settings`
+- [ ] Add two `<button>` elements for format toggle: `id="btn-fmt-png"` and `id="btn-fmt-jpg"` with `aria-pressed` attributes
+- [ ] Add a `<p id="disk-estimate">` element to display the live disk space estimate
+- [ ] Add a `<p id="settings-locked-note" hidden>Settings cannot be changed during a session.</p>` element
+- [ ] Add inline error message elements: `<span id="error-interval" hidden>` and `<span id="error-times" hidden>`
+- [ ] Add a `<button id="btn-save-settings">Save</button>` element
+- [ ] Write a `computeEstimate(interval, format, start, end)` function using the formula in the design doc
+- [ ] Write a `formatBytes(bytes)` helper that returns a human-readable GB/MB string
+- [ ] Write an `updateDiskEstimate()` function that reads current input values, calls `computeEstimate`, and updates `#disk-estimate`
+- [ ] Attach `input` event listeners on `#setting-interval` and the format toggle buttons to call `updateDiskEstimate()`
+- [ ] Write a `validateSettings()` function that checks interval >= 5 and end > start (if both set); shows/hides error spans and returns a boolean
+- [ ] Add a click listener on `#btn-save-settings` that calls `validateSettings()` and, if valid, emits `socket.emit('update-settings', { interval, format, start, end })`
+- [ ] Write a `lockSettings(locked)` function that sets `disabled` on all inputs and the save button, and shows/hides `#settings-locked-note`
+- [ ] In the `status-update` handler, populate all inputs from `session` values and call `lockSettings(session.status !== 'idle')`
+- [ ] Call `updateDiskEstimate()` after populating inputs on `status-update`
+- [ ] Add click listeners on `#btn-fmt-png` and `#btn-fmt-jpg` to update `aria-pressed` state and call `updateDiskEstimate()`
+- [ ] Verify that changing the interval input live-updates the disk estimate
+- [ ] Verify that toggling format between PNG and JPG live-updates the disk estimate
+- [ ] Verify that setting interval to 4 shows an inline warning but still allows saving
+- [ ] Verify that setting end time earlier than start time shows an inline error and prevents emit
+- [ ] Verify that clicking Save with valid inputs emits `update-settings` with the correct payload
+- [ ] Add a `<span id="interval-warning" hidden>` with text "Intervals below 5s may cause frame gaps on older devices"
+- [ ] In the interval `input` event listener, show `#interval-warning` when value < 5, hide it otherwise
+- [ ] Add a `<p id="schedule-preview">` below the start time input for the human-readable countdown
+- [ ] Write a `updateSchedulePreview()` function: if start time is set, compute minutes until next occurrence (today or tomorrow) and update `#schedule-preview`; if empty, clear it
+- [ ] Attach `updateSchedulePreview()` to the start time `input` event and call it on `status-update`
+- [ ] Call `updateSchedulePreview()` every 60 seconds via `setInterval` so the countdown stays accurate
+- [ ] Verify that setting interval to 4 shows the warning but the Save button remains enabled
+- [ ] Verify that all inputs are disabled when the session is running
+- [ ] Verify that setting a past time shows "Will start tomorrow at HH:MM"
+- [ ] Verify that setting a future time shows "Will start in Xh Ym"

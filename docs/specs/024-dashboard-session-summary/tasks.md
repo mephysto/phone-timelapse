@@ -1,0 +1,18 @@
+- [ ] Confirm `#panel-summary` in `dashboard.html` has the `hidden` attribute set by default
+- [ ] Add `<p id="summary-duration">` inside `#panel-summary`
+- [ ] Add `<p id="summary-frames-captured">` inside `#panel-summary`
+- [ ] Add `<p id="summary-frames-expected">` inside `#panel-summary`
+- [ ] Add `<p id="summary-gaps">` inside `#panel-summary`
+- [ ] Add `<p class="note">Reload the page to start a new session.</p>` inside `#panel-summary`
+- [ ] Write a `formatDuration(totalSeconds)` function that returns a zero-padded HH:MM:SS string
+- [ ] Write a `renderSummary({ duration, frameCount, expectedFrames, gapCount })` function that populates all four `<p>` elements and removes `hidden` from `#panel-summary`
+- [ ] In `renderSummary`, format `gapCount` as "No disconnections" / "1 disconnection" / "N disconnections"
+- [ ] Add a `socket.on('session-ended', ({ summary }) => renderSummary(summary))` handler
+- [ ] In the `status-update` handler, if `session.status === 'stopped'`, call `renderSummary` with values derived from the session object
+- [ ] In the `status-update` handler, if `session.status` is `'idle'` or `'running'`, ensure `#panel-summary` remains hidden
+- [ ] Verify that stopping a running test session triggers `session-ended` and the summary panel appears
+- [ ] Verify the displayed duration is correct to within one second
+- [ ] Verify frame count and expected frames are correct numbers
+- [ ] Verify gap count uses correct singular/plural form
+- [ ] Verify that reloading the page after a stopped session still shows the summary panel
+- [ ] Verify the summary panel is not visible on load when the session is idle

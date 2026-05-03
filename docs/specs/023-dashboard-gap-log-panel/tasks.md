@@ -1,0 +1,19 @@
+- [ ] Add a `<ul id="gap-log" style="max-height:200px;overflow-y:auto;list-style:none;">` element inside `#panel-gap-log`
+- [ ] Add a `<p id="gap-log-empty">No disconnections recorded.</p>` element inside `#panel-gap-log`
+- [ ] Declare a module-level `const gapEntries = new Map()` to track partial gap entries by their start timestamp key
+- [ ] Write a `formatTime(isoString)` helper that returns a zero-padded HH:MM:SS string
+- [ ] Write a `createGapEntry(atString)` function that creates a `<li>` with `data-gap-id` set to `atString` and text "Disconnected at HH:MM:SS"
+- [ ] Write a `resolveGapEntry(li, from, to, missed)` function that updates the `<li>` text to the resolved format with singular/plural "frame/frames"
+- [ ] Write an `addGapEntry(li)` function that prepends the `<li>` to `#gap-log` and hides `#gap-log-empty`
+- [ ] Add a `socket.on('gap-started', ({ at }) => ...)` handler that creates a partial entry, stores it in `gapEntries`, and calls `addGapEntry`
+- [ ] Add a `socket.on('gap-ended', ({ from, to, missed }) => ...)` handler that looks up the entry in `gapEntries` by key `from` and calls `resolveGapEntry`
+- [ ] In the `gap-ended` handler, delete the resolved entry from `gapEntries` after updating it
+- [ ] Write a `renderGapsFromState(gaps)` function that clears `#gap-log` and renders each gap in `session.gaps` as a resolved entry using `resolveGapEntry`
+- [ ] Call `renderGapsFromState(session.gaps)` inside the `status-update` handler
+- [ ] Show `#gap-log-empty` inside `renderGapsFromState` if `gaps` is empty; hide it otherwise
+- [ ] Verify that simulating a phone disconnect adds a "Disconnected at HH:MM:SS" entry at the top of the list
+- [ ] Verify that simulating a phone reconnect updates the entry to the resolved "Gap: ... → ..." format
+- [ ] Verify that "1 frame missed" uses singular and "2 frames missed" uses plural
+- [ ] Verify that multiple gap entries stack newest-first
+- [ ] Verify that reloading the dashboard mid-session renders existing gaps from `status-update` correctly
+- [ ] Verify the placeholder "No disconnections recorded." is hidden once any entry exists

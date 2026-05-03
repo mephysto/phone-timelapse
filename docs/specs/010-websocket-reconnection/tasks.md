@@ -1,0 +1,11 @@
+- [ ] Add a `<div id="reconnecting-banner">` element to `phone.html` with the text "Reconnecting…"
+- [ ] Write CSS to hide `#reconnecting-banner` by default and show it when a `visible` class is present
+- [ ] Update the `io()` call in `phone.js` to pass explicit reconnection options: `reconnectionDelay: 1_000`, `reconnectionDelayMax: 30_000`, `reconnectionFactor: 2`, `reconnectionAttempts: Infinity`
+- [ ] Add a `socket.on('disconnect', ...)` listener that adds the `visible` class to `#reconnecting-banner`
+- [ ] In the `disconnect` listener, reset the `capturing` flag to `false`
+- [ ] Add a `socket.on('connect', ...)` listener that removes the `visible` class from `#reconnecting-banner`
+- [ ] Verify the `connect` listener also updates the status dot to green (coordinating with T-09)
+- [ ] Verify the `disconnect` listener also updates the status dot to red (coordinating with T-09)
+- [ ] Manually test by disabling WiFi on the phone — the banner should appear within ~1 second
+- [ ] Manually test by re-enabling WiFi — the banner should disappear and the next `capture` event should be processed normally
+- [ ] Verify that after reconnection, no page refresh is required for captures to resume

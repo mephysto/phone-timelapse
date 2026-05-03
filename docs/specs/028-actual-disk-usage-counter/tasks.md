@@ -1,0 +1,18 @@
+- [ ] Add `totalBytes: 0` to the initial `session` object in `server.js`
+- [ ] Reset `session.totalBytes = 0` in the session-start routine
+- [ ] After each successful frame write, call `fs.stat` (or use the buffer's `byteLength`) to obtain the actual file size in bytes
+- [ ] Add the obtained byte count to `session.totalBytes`
+- [ ] Include `fileSize` (the per-frame byte count) in the `'frame-saved'` Socket.IO event payload
+- [ ] Include `session.totalBytes` in the `'frame-saved'` payload (so dashboard can self-correct without accumulating drift)
+- [ ] Include `session.totalBytes` in the `'session-started'` payload
+- [ ] Include `session.totalBytes` in the `'session-ended'` payload
+- [ ] Include `session.totalBytes` in any `'session-state'` sync broadcast
+- [ ] Write `formatBytes(bytes)` helper in `dashboard.js` (or a shared inline function): returns `"0 B"`, `"N KB"`, `"N MB"`, `"N GB"` with one decimal place for values ≥ 1 KB using 1024-based divisions
+- [ ] Add a "Disk usage" row to the stats panel in `dashboard.html` with element id `disk-usage`
+- [ ] Initialise `let totalBytes = 0` in `dashboard.js`
+- [ ] On `'session-started'` event, reset `totalBytes = session.totalBytes` (expected: 0) and update the display
+- [ ] On `'session-state'` event (page reload recovery), set `totalBytes = session.totalBytes` and update the display
+- [ ] On `'frame-saved'` event, set `totalBytes = event.totalBytes` (use server's running total to avoid client-side drift) and update the display
+- [ ] Manual test: start a session; confirm "Disk usage" starts at "0 B" and increments after each frame
+- [ ] Manual test: verify the formatted value matches expected size range for the configured format (PNG ≈ 3–5 MB/frame, JPG ≈ 0.5–1.5 MB/frame)
+- [ ] Manual test: reload the dashboard mid-session; confirm disk usage shows the current server-side total, not zero

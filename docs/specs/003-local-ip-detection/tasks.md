@@ -1,0 +1,12 @@
+- [ ] Add `const os = require('os')` to `server.js`
+- [ ] Write a `getLocalIp()` function that calls `os.networkInterfaces()`
+- [ ] Inside `getLocalIp()`, iterate over all interfaces and their address entries
+- [ ] Filter for entries where `family === 'IPv4'` and `internal === false`
+- [ ] Return the first matching address, or `'127.0.0.1'` if none is found
+- [ ] Add a warning to `process.stderr` in the fallback case: `"Warning: no LAN IPv4 address found, falling back to 127.0.0.1"`
+- [ ] Call `getLocalIp()` once and assign the result to a module-level `const LOCAL_IP`
+- [ ] In the `server.listen` callback, print `Dashboard: http://${LOCAL_IP}:${PORT}`
+- [ ] In the same callback, print `Phone:     http://${LOCAL_IP}:${PORT}/phone` (padded to align with Dashboard line)
+- [ ] Run `node server.js` and confirm both lines appear in the terminal with a non-loopback IP
+- [ ] On the phone (connected to the same WiFi), navigate to the printed phone URL and confirm the page loads
+- [ ] Confirm that `LOCAL_IP` is accessible later in the file (i.e., not scoped inside a function other than `getLocalIp`) so T-04 can reference it

@@ -1,0 +1,15 @@
+- [ ] Define the `session` object in `server.js` with all fields from the schema and correct default values
+- [ ] Set `session.interval` default to `30`
+- [ ] Set `session.format` default to `'jpg'`
+- [ ] Set `session.status` default to `'idle'`
+- [ ] Set `session.gaps` default to `[]`
+- [ ] Set all timestamp fields (`startTime`, `lastCaptureAt`) default to `null`
+- [ ] Write a `startSession(options)` function that returns early with an error indicator if `status` is `'running'`
+- [ ] In `startSession()`, set `status` to `'running'` and `startTime` to `new Date()`
+- [ ] In `startSession()`, reset `frameCount`, `expectedFrames`, `gaps`, and `lastCaptureAt` to their initial values
+- [ ] In `startSession()`, apply any provided `options` (interval, format, scheduledStart, scheduledEnd)
+- [ ] Write a `stopSession()` function that returns early with an error indicator if `status` is `'idle'`
+- [ ] In `stopSession()`, set `status` to `'stopped'`
+- [ ] Verify that calling `startSession()` after `stopSession()` correctly begins a new session with reset counters
+- [ ] Verify that calling `startSession()` twice in a row without stopping does not change `startTime` on the second call
+- [ ] Write a unit test (or manual verification steps) confirming the idle → running → stopped → running transition

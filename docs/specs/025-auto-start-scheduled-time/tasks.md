@@ -1,0 +1,22 @@
+- [ ] Add `scheduledStart: null` and `scheduledEnd: null` fields to the initial `session` object in `server.js`
+- [ ] Add `_scheduledStartFired: false` as an internal (non-broadcast) field on the session object
+- [ ] Write `getLocalHHMM()` helper that returns the current local time as a zero-padded `"HH:MM"` string
+- [ ] Write `checkScheduledStart()` that returns early if `session.scheduledStart` is null or empty
+- [ ] In `checkScheduledStart()`, return early if `session.status !== 'idle'`
+- [ ] In `checkScheduledStart()`, return early if `_scheduledStartFired` is true
+- [ ] In `checkScheduledStart()`, compare `getLocalHHMM()` to `session.scheduledStart`; if they match, call the existing session-start logic and set `_scheduledStartFired = true`
+- [ ] Reset `_scheduledStartFired` to `false` whenever `getLocalHHMM()` no longer matches `session.scheduledStart` (i.e. the minute has advanced)
+- [ ] Start a `setInterval` at 1000 ms on server boot that calls `checkScheduledStart()`
+- [ ] Handle the `'set-schedule'` Socket.IO event: update `session.scheduledStart` and reset `_scheduledStartFired = false`
+- [ ] Ensure the existing `'session-started'` emit path is reused by the auto-start trigger (no duplicate emit logic)
+- [ ] Add `scheduledStart` and `scheduledEnd` to the session state broadcast so the dashboard receives the current values on connect
+- [ ] Add a "Scheduled Start" time input (`<input type="time">`) to `dashboard.html`
+- [ ] Wire the input's `change` event to emit `'set-schedule'` with the new value (or `null` if cleared)
+- [ ] Display a status badge on the dashboard that reads "Starts at HH:MM" when `scheduledStart` is set and session is idle
+- [ ] Hide or disable the scheduled-start input while a session is running
+- [ ] Manual test: set scheduled start to 1 minute in the future; confirm session starts automatically without pressing Start
+- [ ] Write a `nextOccurrence(hhmm)` helper that returns a `Date` for the next time that HH:MM occurs — today if still in the future, tomorrow if already past
+- [ ] Use `nextOccurrence()` in `checkScheduledStart()` to correctly handle past times
+- [ ] Include `nextScheduledStartAt` (ISO string from `nextOccurrence()`) in the `status-update` broadcast payload
+- [ ] Manual test: set scheduled start to 1 minute in the future; confirm session starts automatically
+- [ ] Manual test: set scheduled start to a time already past for today; confirm the dashboard preview shows "Will start tomorrow at HH:MM" and the session does not start until then

@@ -1,0 +1,17 @@
+- [ ] Add `_scheduledEndFired: false` as an internal (non-broadcast) field on the session object
+- [ ] Refactor the manual-stop logic into a standalone `stopSession()` function in `server.js` if it is not already one
+- [ ] Confirm `stopSession()` writes `session.log` and emits `'session-ended'` — add either step if missing
+- [ ] Write `checkScheduledEnd()` that returns early if `session.scheduledEnd` is null or empty
+- [ ] In `checkScheduledEnd()`, return early if `session.status !== 'running'`
+- [ ] In `checkScheduledEnd()`, return early if `_scheduledEndFired` is true
+- [ ] In `checkScheduledEnd()`, compare `getLocalHHMM()` to `session.scheduledEnd`; if they match, call `stopSession()` and set `_scheduledEndFired = true`
+- [ ] Reset `_scheduledEndFired` to `false` whenever `getLocalHHMM()` no longer matches `session.scheduledEnd`
+- [ ] Add `checkScheduledEnd()` call to the existing 1-second polling interval established in T-25
+- [ ] Update the `'set-schedule'` Socket.IO handler to also reset `_scheduledEndFired = false` when `scheduledEnd` changes
+- [ ] Add `scheduledEnd` to the session state broadcast payload
+- [ ] Add a "Scheduled End" time input (`<input type="time">`) to `dashboard.html`
+- [ ] Wire the input's `change` event to emit `'set-schedule'` with the updated `scheduledEnd` value
+- [ ] Display a "Stops at HH:MM" badge on the dashboard when `scheduledEnd` is set and session is running
+- [ ] Manual test: set scheduled end to 1 minute after manual start; confirm session stops automatically
+- [ ] Manual test: stop session manually before scheduled end; confirm no error and auto-stop does not fire afterwards
+- [ ] Manual test: set scheduled end to a time already past; confirm session does not stop retroactively

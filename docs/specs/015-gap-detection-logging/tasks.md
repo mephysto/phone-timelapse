@@ -1,0 +1,16 @@
+- [ ] Declare a `gapStart` variable in `server.js`, initialised to `null`
+- [ ] In the phone socket `disconnect` handler, return early if `session.status` is not `'running'`
+- [ ] In the phone socket `disconnect` handler, set `gapStart = new Date()`
+- [ ] In the phone socket `disconnect` handler, emit `gap-started` to the dashboard room with `{ at: gapStart.toISOString() }`
+- [ ] In the phone socket `connect` handler, check if `gapStart` is non-null before attempting to close a gap
+- [ ] When closing a gap on reconnect, compute gap duration in seconds as `(now - gapStart) / 1_000`
+- [ ] Compute `missed` frames as `Math.floor(gapDurationSeconds / session.interval)`
+- [ ] Push `{ from: gapStart.toISOString(), to: gapEnd.toISOString(), missed }` to `session.gaps`
+- [ ] Reset `gapStart = null` after the gap is closed
+- [ ] Emit `gap-ended` to the dashboard room with the gap object `{ from, to, missed }`
+- [ ] Re-attach the `frame` event listener (from T-13) to the new phone socket on reconnect
+- [ ] In `stopSession()`, check if `gapStart` is non-null and close the open gap using the stop time
+- [ ] Verify that a phone disconnect during an idle session does not create a gap entry
+- [ ] Verify that the first phone connection at session start does not create a spurious gap entry
+- [ ] Verify that `session.gaps` contains the correct number of entries after a test session with one simulated disconnect
+- [ ] Verify `missed` frame count is correct for a known gap duration and interval

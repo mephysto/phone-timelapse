@@ -1,0 +1,25 @@
+- [ ] Write a `formatTime(date)` helper that returns a local `HH:MM:SS` string using `getHours()`, `getMinutes()`, `getSeconds()` with zero-padding
+- [ ] Write a `formatDate(date)` helper that returns a local `YYYY-MM-DD` string using local `Date` methods with zero-padding
+- [ ] Write a `formatDuration(totalSeconds)` helper that returns `Xh Ym Zs` using integer arithmetic
+- [ ] Write a `buildLogContent(endTime)` function that assembles the full log string from the current `session` object and the provided `endTime`
+- [ ] In `buildLogContent`, include the header `Phone Timelapse — Session Log` followed by exactly 30 `=` characters on the next line
+- [ ] Include `Date:` formatted as `YYYY-MM-DD` using `session.startTime`
+- [ ] Include `Start:` formatted as `HH:MM:SS` using `session.startTime`
+- [ ] Include `End:` formatted as `HH:MM:SS` using `endTime`
+- [ ] Compute total duration in whole seconds as `Math.floor((endTime - session.startTime) / 1_000)`
+- [ ] Include `Duration:` formatted via `formatDuration()`
+- [ ] Include `Frames captured:` using `session.frameCount`
+- [ ] Include `Frames expected:` using `session.expectedFrames`
+- [ ] Include `Gaps:` using `session.gaps.length`
+- [ ] For each entry in `session.gaps`, append a `Gap #N` block with `From:`, `To:`, and `Missed:` lines
+- [ ] Parse gap `from` and `to` ISO strings back to `Date` objects before formatting them as `HH:MM:SS`
+- [ ] Use `\n` (Unix line endings) throughout the log string
+- [ ] Write a `writeSessionLog(endTime)` function that constructs the log path and calls `fs.promises.writeFile`
+- [ ] Guard `writeSessionLog` against an empty `session.outputDir` (return early)
+- [ ] Wrap the `writeFile` call in a try/catch and log any error without rethrowing
+- [ ] Capture `endTime = new Date()` synchronously at the start of `stopSession()` before any awaits
+- [ ] Call `writeSessionLog(endTime)` from `stopSession()` and await it
+- [ ] Verify `session.log` appears in the correct output folder after a test session
+- [ ] Verify the log contents match the expected format exactly, including spacing and line breaks
+- [ ] Verify a session with zero gaps produces a log with `Gaps: 0` and no gap blocks
+- [ ] Verify a session with two gaps produces two `Gap #N` blocks with correct data
