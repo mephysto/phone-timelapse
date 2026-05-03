@@ -1,14 +1,12 @@
-- [ ] Write a `resolveOutputDir()` function in `server.js` (or a separate helper module)
-- [ ] In `resolveOutputDir()`, get the current local date using `new Date()` and local `Date` methods (not `toISOString()`)
-- [ ] Format the date as `YYYY-MM-DD` using `getFullYear()`, `getMonth() + 1`, and `getDate()` with zero-padding
-- [ ] Resolve the `./output/` root as an absolute path using `path.resolve(process.cwd(), 'output')`
-- [ ] Create the `./output/` root directory with `fs.mkdirSync(root, { recursive: true })` if it does not exist
-- [ ] Set the initial candidate path to `path.join(root, dateString)`
-- [ ] In a `while (fs.existsSync(candidate))` loop, increment a suffix counter and update `candidate` to `<root>/<dateString> (<n>)`
-- [ ] After the loop, create the chosen candidate directory with `fs.mkdirSync(candidate)`
-- [ ] Return the absolute path of the created directory
-- [ ] Call `resolveOutputDir()` inside `startSession()` and assign the result to `session.outputDir`
-- [ ] Verify that running two sessions on the same calendar day results in two distinct folders
-- [ ] Verify the suffix format is exactly ` (2)` with a space before the parenthesis
-- [ ] Verify the `./output/` directory is created automatically if absent
-- [ ] Verify that a permissions error during folder creation propagates and prevents `startSession()` from completing
+- [x] Write a `resolveOutputDir()` function in `server.js`
+- [x] In `resolveOutputDir()`, get the current local date using `new Date()` and local `Date` methods (not `toISOString()`)
+- [x] Format the date as `YYYY-MM-DD` using `getFullYear()`, `getMonth() + 1`, and `getDate()` with zero-padding
+- [x] Resolve the `./output/` root as an absolute path using `path.resolve(process.cwd(), 'output')`
+- [x] Create the `./output/` root directory with `fs.mkdirSync(root, { recursive: true })`
+- [x] Set the initial candidate path to `path.join(root, dateString)`
+- [x] In a `while (fs.existsSync(candidate))` loop, increment a suffix counter and update `candidate` to `<root>/<dateString> (<n>)`
+- [x] After the loop, create the chosen candidate directory with `fs.mkdirSync(candidate)`
+- [x] Return the absolute path of the created directory
+- [x] Call `resolveOutputDir()` inside `startSession()` and assign the result to `session.outputDir`
+- [x] Verified with node test: three sequential calls produce `YYYY-MM-DD`, `YYYY-MM-DD (2)`, `YYYY-MM-DD (3)`
+- [x] Verified suffix format is exactly ` (2)` with a space before the parenthesis

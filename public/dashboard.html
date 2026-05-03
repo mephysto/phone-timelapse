@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timelapse Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, sans-serif;
+      background: #111;
+      color: #eee;
+      padding: 1rem;
+    }
+
+    #https-warning {
+      background: #7c3e00;
+      color: #ffd;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.75rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    section {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    /* ── Status panel ── */
+    #status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+    #status-badge[data-status="idle"]    { background: #2a2a2a; color: #aaa; }
+    #status-badge[data-status="running"] { background: #0a3d0a; color: #4caf50; }
+    #status-badge[data-status="stopped"] { background: #1a1a2a; color: #7a7aff; }
+
+    .btn-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+    button {
+      padding: 0.4rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      background: #333;
+      color: #eee;
+      transition: opacity 0.15s;
+    }
+    button:disabled { opacity: 0.35; cursor: not-allowed; }
+    #btn-start { background: #1a4d1a; color: #7ddb7d; }
+    #btn-stop  { background: #4d1a1a; color: #db7d7d; }
+
+    /* ── Stats panel ── */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #222;
+      font-size: 0.9rem;
+    }
+    .stat-row:last-of-type { border-bottom: none; }
+    .stat-label { color: #888; }
+    .stat-value { font-variant-numeric: tabular-nums; }
+
+    #progress-bar-track {
+      margin-top: 0.75rem;
+      height: 6px;
+      background: #2a2a2a;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    #progress-bar-fill {
+      height: 100%;
+      background: #4caf50;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+
+    /* ── Preview panel ── */
+    #panel-preview { grid-column: span 2; }
+    #preview-placeholder { color: #555; font-style: italic; }
+    #latest-frame { max-width: 100%; border-radius: 4px; }
+
+    /* ── Settings panel ── */
+    .field-row {
+      margin-bottom: 0.75rem;
+    }
+    .field-row label {
+      display: block;
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 0.3rem;
+    }
+    .field-row input[type="number"],
+    .field-row input[type="time"] {
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 4px;
+      color: #eee;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.9rem;
+      width: 100%;
+    }
+    .field-row input:disabled { opacity: 0.4; }
+
+    .fmt-row { display: flex; gap: 0.4rem; }
+    .fmt-btn { flex: 1; }
+    .fmt-btn[aria-pressed="true"] { background: #003366; color: #7ab; border: 1px solid #336; }
+
+    #disk-estimate, #schedule-preview {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 0.3rem;
+    }
+    #interval-warning, #error-interval, #error-times {
+      font-size: 0.75rem;
+      color: #f0a050;
+      display: block;
+      margin-top: 0.2rem;
+    }
+    #settings-locked-note { font-size: 0.8rem; color: #888; margin-bottom: 0.5rem; }
+
+    /* ── QR panel ── */
+    #panel-qr img { display: block; border-radius: 4px; margin-bottom: 0.5rem; background: #fff; }
+    #panel-qr p { font-size: 0.8rem; color: #aaa; margin-top: 0.3rem; }
+
+    /* ── Gap log panel ── */
+    #gap-log-empty { font-size: 0.85rem; color: #555; }
+    #gap-log {
+      max-height: 200px;
+      overflow-y: auto;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    #gap-log li {
+      font-size: 0.8rem;
+      color: #f0a050;
+      padding: 0.25rem 0;
+      border-bottom: 1px solid #222;
+    }
+    #gap-log li.resolved { color: #888; }
+
+    /* ── Summary panel ── */
+    #panel-summary { border-color: #336; }
+    #panel-summary p {
+      font-size: 0.9rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #222;
+    }
+    #panel-summary p:last-of-type { border-bottom: none; }
+    #panel-summary .note { color: #666; font-style: italic; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+
+  <div id="https-warning" hidden>
+    ⚠ Not running over HTTPS — the phone camera page will not work. See the README for mkcert setup instructions.
+  </div>
+
+  <div class="grid">
+
+    <section id="panel-status">
+      <h2>Status</h2>
+      <span id="status-badge" data-status="idle">Idle</span>
+      <div class="btn-row">
+        <button id="btn-start">Start</button>
+        <button id="btn-stop" disabled>Stop</button>
+      </div>
+    </section>
+
+    <section id="panel-stats">
+      <h2>Stats</h2>
+      <div class="stat-row"><span class="stat-label">Frames</span>        <span class="stat-value" id="stat-frame-count">0</span></div>
+      <div class="stat-row"><span class="stat-label">Next capture</span>  <span class="stat-value" id="stat-countdown">—</span></div>
+      <div class="stat-row"><span class="stat-label">Elapsed</span>       <span class="stat-value" id="stat-elapsed">00:00:00</span></div>
+      <div class="stat-row"><span class="stat-label">Disk usage</span>    <span class="stat-value" id="disk-usage">0 B</span></div>
+      <div id="progress-bar-track"><div id="progress-bar-fill"></div></div>
+    </section>
+
+    <section id="panel-preview">
+      <h2>Live Preview</h2>
+      <div id="preview-placeholder">No frames yet</div>
+      <img id="latest-frame" alt="Latest captured frame" hidden style="max-width:100%;display:block;">
+    </section>
+
+    <section id="panel-settings">
+      <h2>Settings</h2>
+      <p id="settings-locked-note" hidden>Settings cannot be changed during a session.</p>
+
+      <div class="field-row">
+        <label for="setting-interval">Interval (seconds)</label>
+        <input id="setting-interval" type="number" min="1" value="30">
+        <span id="interval-warning" hidden>Intervals below 5s may cause frame gaps on older devices</span>
+        <span id="error-interval" hidden></span>
+      </div>
+
+      <div class="field-row">
+        <label>Format</label>
+        <div class="fmt-row">
+          <button id="btn-fmt-jpg" class="fmt-btn" aria-pressed="true">JPG</button>
+          <button id="btn-fmt-png" class="fmt-btn" aria-pressed="false">PNG</button>
+        </div>
+        <div id="disk-estimate"></div>
+      </div>
+
+      <div class="field-row">
+        <label for="setting-start">Scheduled start</label>
+        <input id="setting-start" type="time">
+        <div id="schedule-preview"></div>
+      </div>
+
+      <div class="field-row">
+        <label for="setting-end">Scheduled end</label>
+        <input id="setting-end" type="time">
+        <span id="error-times" hidden>End time must be after start time</span>
+      </div>
+
+      <button id="btn-save-settings">Save settings</button>
+    </section>
+
+    <section id="panel-qr">
+      <h2>QR Code</h2>
+      <img src="/qr" alt="QR code for phone camera page" width="200" height="200">
+      <p>Scan to open camera on your phone</p>
+      <p>Phone must be on the same WiFi network as this PC</p>
+    </section>
+
+    <section id="panel-gap-log">
+      <h2>Gap Log</h2>
+      <p id="gap-log-empty">No disconnections recorded.</p>
+      <ul id="gap-log"></ul>
+    </section>
+
+    <section id="panel-summary" hidden>
+      <h2>Session Summary</h2>
+      <p id="summary-duration"></p>
+      <p id="summary-frames-captured"></p>
+      <p id="summary-frames-expected"></p>
+      <p id="summary-gaps"></p>
+      <p class="note">Reload the page to start a new session.</p>
+    </section>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // ── HTTPS warning ─────────────────────────────────────────────────────────
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+      document.getElementById('https-warning').removeAttribute('hidden');
+    }
+
+    // ── Socket ────────────────────────────────────────────────────────────────
+    const socket = io();
+
+    // ── DOM refs ──────────────────────────────────────────────────────────────
+    const badge          = document.getElementById('status-badge');
+    const btnStart       = document.getElementById('btn-start');
+    const btnStop        = document.getElementById('btn-stop');
+    const elFrameCount   = document.getElementById('stat-frame-count');
+    const elCountdown    = document.getElementById('stat-countdown');
+    const elElapsed      = document.getElementById('stat-elapsed');
+    const elDiskUsage    = document.getElementById('disk-usage');
+    const elProgressFill = document.getElementById('progress-bar-fill');
+    const elPreviewImg   = document.getElementById('latest-frame');
+    const elPlaceholder  = document.getElementById('preview-placeholder');
+    const elGapLog       = document.getElementById('gap-log');
+    const elGapEmpty     = document.getElementById('gap-log-empty');
+    const elSummary      = document.getElementById('panel-summary');
+    const elIntervalInput  = document.getElementById('setting-interval');
+    const elStartInput     = document.getElementById('setting-start');
+    const elEndInput       = document.getElementById('setting-end');
+    const elBtnFmtJpg      = document.getElementById('btn-fmt-jpg');
+    const elBtnFmtPng      = document.getElementById('btn-fmt-png');
+    const elDiskEstimate   = document.getElementById('disk-estimate');
+    const elSchedulePreview = document.getElementById('schedule-preview');
+    const elIntervalWarning = document.getElementById('interval-warning');
+    const elErrorInterval   = document.getElementById('error-interval');
+    const elErrorTimes      = document.getElementById('error-times');
+    const elLockedNote      = document.getElementById('settings-locked-note');
+    const elBtnSave         = document.getElementById('btn-save-settings');
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    let frameCount       = 0;
+    let expectedFrames   = 0;
+    let intervalSeconds  = 30;
+    let countdownSeconds = 0;
+    let startTimeMs      = null;
+    let totalBytes       = 0;
+    let selectedFormat   = 'jpg';
+    let countdownTimer   = null;
+    let elapsedTimer     = null;
+    const gapEntries     = new Map();
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function pad2(n) { return String(n).padStart(2, '0'); }
+
+    function formatHMS(totalSecs) {
+      const h = Math.floor(totalSecs / 3600);
+      const m = Math.floor((totalSecs % 3600) / 60);
+      const s = Math.floor(totalSecs % 60);
+      return `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+    }
+
+    function formatDuration(totalSecs) {
+      const h = Math.floor(totalSecs / 3600);
+      const m = Math.floor((totalSecs % 3600) / 60);
+      const s = Math.floor(totalSecs % 60);
+      return `${h}h ${m}m ${s}s`;
+    }
+
+    function formatBytes(bytes) {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+    }
+
+    function formatLocalTime(isoString) {
+      const d = new Date(isoString);
+      return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+    }
+
+    // ── Stats timers ──────────────────────────────────────────────────────────
+    function stopTimers() {
+      clearInterval(countdownTimer);
+      clearInterval(elapsedTimer);
+      countdownTimer = null;
+      elapsedTimer   = null;
+    }
+
+    function startTimers() {
+      stopTimers();
+      countdownTimer = setInterval(() => {
+        countdownSeconds = Math.max(0, countdownSeconds - 1);
+        elCountdown.textContent = `${countdownSeconds}s`;
+      }, 1_000);
+      elapsedTimer = setInterval(() => {
+        if (startTimeMs === null) return;
+        elElapsed.textContent = formatHMS((Date.now() - startTimeMs) / 1_000);
+      }, 1_000);
+    }
+
+    function updateProgressBar() {
+      const pct = expectedFrames > 0
+        ? Math.min(100, (frameCount / expectedFrames) * 100)
+        : 0;
+      elProgressFill.style.width = `${pct}%`;
+    }
+
+    // ── Controls ──────────────────────────────────────────────────────────────
+    function renderControls(status) {
+      badge.dataset.status = status;
+      const labels = { idle: 'Idle', running: 'Running', stopped: 'Stopped' };
+      badge.textContent = labels[status] || status;
+      btnStart.disabled = status === 'running' || status === 'stopped';
+      btnStop.disabled  = status !== 'running';
+    }
+
+    btnStart.addEventListener('click', () => socket.emit('start-session', {}));
+    btnStop.addEventListener('click',  () => socket.emit('stop-session'));
+
+    // ── Preview ───────────────────────────────────────────────────────────────
+    function updatePreview(timestamp) {
+      elPreviewImg.src = `/latest-frame?t=${timestamp}`;
+      elPreviewImg.removeAttribute('hidden');
+      elPlaceholder.style.display = 'none';
+    }
+
+    // ── Gap log ───────────────────────────────────────────────────────────────
+    function createGapEntry(atString) {
+      const li = document.createElement('li');
+      li.dataset.gapId = atString;
+      li.textContent = `Disconnected at ${formatLocalTime(atString)}`;
+      return li;
+    }
+
+    function resolveGapEntry(li, from, to, missed) {
+      const frames = missed === 1 ? '1 frame' : `${missed} frames`;
+      li.textContent = `Gap: ${formatLocalTime(from)} → ${formatLocalTime(to)} (${frames} missed)`;
+      li.classList.add('resolved');
+    }
+
+    function addGapEntry(li) {
+      elGapLog.prepend(li);
+      elGapEmpty.style.display = 'none';
+    }
+
+    function renderGapsFromState(gaps) {
+      elGapLog.innerHTML = '';
+      if (!gaps || gaps.length === 0) {
+        elGapEmpty.style.display = '';
+        return;
+      }
+      elGapEmpty.style.display = 'none';
+      for (const gap of [...gaps].reverse()) {
+        const li = document.createElement('li');
+        resolveGapEntry(li, gap.from, gap.to, gap.missed);
+        elGapLog.appendChild(li);
+      }
+    }
+
+    socket.on('gap-started', ({ at }) => {
+      const li = createGapEntry(at);
+      gapEntries.set(at, li);
+      addGapEntry(li);
+    });
+
+    socket.on('gap-ended', ({ from, to, missed }) => {
+      const li = gapEntries.get(from);
+      if (li) {
+        resolveGapEntry(li, from, to, missed);
+        gapEntries.delete(from);
+      }
+    });
+
+    // ── Session summary ───────────────────────────────────────────────────────
+    function renderSummary({ duration, frameCount: fc, expectedFrames: ef, gapCount }) {
+      const gapText = gapCount === 0 ? 'No disconnections'
+        : gapCount === 1 ? '1 disconnection'
+        : `${gapCount} disconnections`;
+      document.getElementById('summary-duration').textContent         = `Duration: ${formatDuration(duration)}`;
+      document.getElementById('summary-frames-captured').textContent  = `Frames captured: ${fc}`;
+      document.getElementById('summary-frames-expected').textContent  = `Frames expected: ${ef}`;
+      document.getElementById('summary-gaps').textContent             = gapText;
+      elSummary.removeAttribute('hidden');
+    }
+
+    // ── Settings ──────────────────────────────────────────────────────────────
+    function computeEstimate(intervalSecs, format, startHHMM, endHHMM) {
+      const perFrame = format === 'png' ? 4 * 1024 * 1024 : 1 * 1024 * 1024;
+      if (startHHMM && endHHMM) {
+        const [sh, sm] = startHHMM.split(':').map(Number);
+        const [eh, em] = endHHMM.split(':').map(Number);
+        let durationMins = (eh * 60 + em) - (sh * 60 + sm);
+        if (durationMins <= 0) durationMins += 24 * 60;
+        const frames = Math.ceil((durationMins * 60) / intervalSecs);
+        return frames * perFrame;
+      }
+      return null;
+    }
+
+    function updateDiskEstimate() {
+      const intervalSecs = Number(elIntervalInput.value) || 30;
+      const format       = selectedFormat;
+      const start        = elStartInput.value;
+      const end          = elEndInput.value;
+      const bytes        = computeEstimate(intervalSecs, format, start, end);
+      if (bytes !== null) {
+        elDiskEstimate.textContent = `Estimated: ~${formatBytes(bytes)}`;
+      } else {
+        const perFrame = format === 'png' ? '~4 MB' : '~1 MB';
+        elDiskEstimate.textContent = `~${perFrame}/frame (set start & end for total)`;
+      }
+    }
+
+    function validateSettings() {
+      let valid = true;
+      const interval = Number(elIntervalInput.value);
+      elErrorInterval.hidden = true;
+
+      const start = elStartInput.value;
+      const end   = elEndInput.value;
+      elErrorTimes.hidden = true;
+      if (start && end) {
+        const [sh, sm] = start.split(':').map(Number);
+        const [eh, em] = end.split(':').map(Number);
+        if (eh * 60 + em <= sh * 60 + sm) {
+          elErrorTimes.hidden = false;
+          valid = false;
+        }
+      }
+      return valid;
+    }
+
+    function lockSettings(locked) {
+      elIntervalInput.disabled  = locked;
+      elStartInput.disabled     = locked;
+      elEndInput.disabled       = locked;
+      elBtnFmtJpg.disabled      = locked;
+      elBtnFmtPng.disabled      = locked;
+      elBtnSave.disabled        = locked;
+      elLockedNote.hidden       = !locked;
+    }
+
+    function updateSchedulePreview() {
+      const val = elStartInput.value;
+      if (!val) { elSchedulePreview.textContent = ''; return; }
+      const [hh, mm] = val.split(':').map(Number);
+      const now       = new Date();
+      const candidate = new Date(now);
+      candidate.setHours(hh, mm, 0, 0);
+      if (candidate <= now) {
+        candidate.setDate(candidate.getDate() + 1);
+        elSchedulePreview.textContent = `Will start tomorrow at ${val}`;
+        return;
+      }
+      const diffMins = Math.round((candidate - now) / 60_000);
+      const h = Math.floor(diffMins / 60);
+      const m = diffMins % 60;
+      elSchedulePreview.textContent = h > 0
+        ? `Will start in ${h}h ${m}m`
+        : `Will start in ${m}m`;
+    }
+
+    elIntervalInput.addEventListener('input', () => {
+      const v = Number(elIntervalInput.value);
+      elIntervalWarning.hidden = v >= 5;
+      updateDiskEstimate();
+    });
+
+    elStartInput.addEventListener('input', () => {
+      updateDiskEstimate();
+      updateSchedulePreview();
+    });
+
+    elEndInput.addEventListener('input', updateDiskEstimate);
+
+    function setFormat(fmt) {
+      selectedFormat = fmt;
+      elBtnFmtJpg.setAttribute('aria-pressed', fmt === 'jpg' ? 'true' : 'false');
+      elBtnFmtPng.setAttribute('aria-pressed', fmt === 'png' ? 'true' : 'false');
+      updateDiskEstimate();
+    }
+
+    elBtnFmtJpg.addEventListener('click', () => setFormat('jpg'));
+    elBtnFmtPng.addEventListener('click', () => setFormat('png'));
+
+    elBtnSave.addEventListener('click', () => {
+      if (!validateSettings()) return;
+      socket.emit('update-settings', {
+        interval:       Number(elIntervalInput.value),
+        format:         selectedFormat,
+        scheduledStart: elStartInput.value || null,
+        scheduledEnd:   elEndInput.value   || null,
+      });
+    });
+
+    setInterval(updateSchedulePreview, 60_000);
+
+    // ── Status-update (full sync on connect / settings change) ────────────────
+    socket.on('status-update', (data) => {
+      frameCount      = data.frameCount     || 0;
+      expectedFrames  = data.expectedFrames || 0;
+      intervalSeconds = data.interval       || 30;
+      totalBytes      = data.totalBytes     || 0;
+      selectedFormat  = data.format         || 'jpg';
+
+      elFrameCount.textContent = `${frameCount}`;
+      elDiskUsage.textContent  = formatBytes(totalBytes);
+      updateProgressBar();
+      renderControls(data.status);
+      renderGapsFromState(data.gaps || []);
+
+      // Populate settings inputs
+      elIntervalInput.value = data.interval || 30;
+      elStartInput.value    = data.scheduledStart || '';
+      elEndInput.value      = data.scheduledEnd   || '';
+      setFormat(data.format || 'jpg');
+      updateDiskEstimate();
+      updateSchedulePreview();
+      lockSettings(data.status === 'running');
+
+      if (data.status === 'running') {
+        startTimeMs = data.startTime ? new Date(data.startTime).getTime() : Date.now();
+        // Reconstruct countdown from lastCaptureAt
+        if (data.lastCaptureAt) {
+          const elapsed = (Date.now() - new Date(data.lastCaptureAt).getTime()) / 1_000;
+          countdownSeconds = Math.max(0, Math.round(intervalSeconds - elapsed));
+        } else {
+          countdownSeconds = intervalSeconds;
+        }
+        elCountdown.textContent = `${countdownSeconds}s`;
+        elElapsed.textContent   = formatHMS((Date.now() - startTimeMs) / 1_000);
+        startTimers();
+        if (data.lastCaptureAt) {
+          updatePreview(new Date(data.lastCaptureAt).getTime());
+        }
+      } else {
+        stopTimers();
+        elCountdown.textContent = '—';
+        if (data.status === 'stopped' && data.startTime) {
+          const dur = Math.floor((Date.now() - new Date(data.startTime).getTime()) / 1_000);
+          elElapsed.textContent = formatHMS(dur);
+        }
+      }
+
+      if (data.status === 'stopped') {
+        renderSummary({
+          duration:       data.startTime
+            ? Math.floor((Date.now() - new Date(data.startTime).getTime()) / 1_000)
+            : 0,
+          frameCount:     data.frameCount     || 0,
+          expectedFrames: data.expectedFrames || 0,
+          gapCount:       (data.gaps || []).length,
+        });
+      }
+    });
+
+    // ── session-started ───────────────────────────────────────────────────────
+    socket.on('session-started', (data) => {
+      frameCount       = 0;
+      expectedFrames   = 0;
+      totalBytes       = data.totalBytes || 0;
+      intervalSeconds  = data.interval || intervalSeconds;
+      countdownSeconds = intervalSeconds;
+      startTimeMs      = data.startTime ? new Date(data.startTime).getTime() : Date.now();
+
+      elFrameCount.textContent = '0';
+      elDiskUsage.textContent  = '0 B';
+      elCountdown.textContent  = `${countdownSeconds}s`;
+      elElapsed.textContent    = '00:00:00';
+      updateProgressBar();
+      renderControls('running');
+      lockSettings(true);
+      elSummary.setAttribute('hidden', '');
+      startTimers();
+    });
+
+    // ── session-ended ─────────────────────────────────────────────────────────
+    socket.on('session-ended', (data) => {
+      stopTimers();
+      elCountdown.textContent = '—';
+      renderControls('stopped');
+      lockSettings(false);
+      if (data.summary) {
+        renderSummary(data.summary);
+      }
+    });
+
+    // ── frame-saved ───────────────────────────────────────────────────────────
+    socket.on('frame-saved', (data) => {
+      frameCount        = data.frameNum;
+      totalBytes        = data.totalBytes;
+      countdownSeconds  = intervalSeconds;
+
+      elFrameCount.textContent = `${frameCount}`;
+      elDiskUsage.textContent  = formatBytes(totalBytes);
+      elCountdown.textContent  = `${countdownSeconds}s`;
+      updateProgressBar();
+      updatePreview(new Date(data.timestamp).getTime());
+    });
+  </script>
+</body>
+</html>

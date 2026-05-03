@@ -87,7 +87,7 @@ Implementation order. Each task should be completable and testable independently
 - On `stopSession()`: clear interval
 - **Done when:** Phone receives `capture` events at the correct interval
 
-### T-13 · Frame receiver and disk writer
+### T-13 · Frame receiver and disk writer ✅
 - On `frame` event: decode incoming `ArrayBuffer`
 - Determine output path: `./output/[dir]/frame_[NNNN].[ext]`
 - Write file with `fs.writeFile`
@@ -96,18 +96,18 @@ Implementation order. Each task should be completable and testable independently
 - Track path of last saved frame (for `/latest-frame` endpoint)
 - **Done when:** Files appear on disk with correct sequential names after test captures
 
-### T-14 · Output folder naming
+### T-14 · Output folder naming ✅
 - On `startSession()`: determine output folder
 - If `./output/YYYY-MM-DD/` exists, try `./output/YYYY-MM-DD (2)/`, `(3)`, etc.
 - Create the folder
 - **Done when:** Running two sessions on the same day creates two separate folders
 
-### T-15 · Gap detection and logging
+### T-15 · Gap detection and logging ✅
 - On phone socket disconnect: record gap start time; emit `gap-started` to dashboard
 - On phone socket reconnect: calculate missed frames; push to `session.gaps[]`; emit `gap-ended` to dashboard
 - **Done when:** Disconnecting phone mid-session creates a gap entry visible in server state
 
-### T-16 · Session log writer
+### T-16 · Session log writer ✅
 - On `stopSession()`: write `session.log` to output folder
 - Format per design.md
 - **Done when:** `session.log` file appears in the correct folder with accurate data after a session
@@ -116,37 +116,37 @@ Implementation order. Each task should be completable and testable independently
 
 ## Phase 4 — PC Dashboard
 
-### T-17 · Dashboard shell (`public/dashboard.html`)
+### T-17 · Dashboard shell (`public/dashboard.html`) ✅
 - HTML layout with panels: Status, Live Preview, Stats, Settings, QR Code, Gap Log, Session Summary
 - Connect to Socket.IO server
 - On connect: server emits `status-update` with full session state; dashboard renders initial state
 - **Done when:** Page loads and shows current session state
 
-### T-18 · Dashboard — QR code panel
+### T-18 · Dashboard — QR code panel ✅
 - `<img src="/qr">` — served from T-04
 - Label: "Scan to open camera on your phone"
 - Note: "Phone must be on the same WiFi network as this PC"
 - **Done when:** QR code visible on dashboard; scanning opens phone page
 
-### T-19 · Dashboard — session controls
+### T-19 · Dashboard — session controls ✅
 - Start and Stop buttons
 - Emit `start-session` / `stop-session` to server
 - Buttons are enabled/disabled based on session status (can't start if running, can't stop if idle)
 - **Done when:** Buttons correctly start and stop the session
 
-### T-20 · Dashboard — live stats
+### T-20 · Dashboard — live stats ✅
 - Frame count (live, increments on `frame-saved`)
 - Countdown to next capture (client-side timer reset on each `frame-saved`)
 - Session progress bar (frameCount / expectedFrames)
 - Session elapsed time (ticking clock)
 - **Done when:** All counters update in real time during a test session
 
-### T-21 · Dashboard — live preview thumbnail
+### T-21 · Dashboard — live preview thumbnail ✅
 - `<img id="latest-frame">` with `src="/latest-frame?t=[timestamp]"` (cache-bust with timestamp)
 - Update `src` on each `frame-saved` event
 - **Done when:** Thumbnail updates after each capture in a test session
 
-### T-22 · Dashboard — settings panel
+### T-22 · Dashboard — settings panel ✅
 - Fields: Interval (number input, seconds), Start time (time input), End time (time input), Format toggle (PNG / JPG)
 - Disk space estimate updates live when interval or format changes
   - Formula: `(sessionDuration / interval) * perFrameSize`
@@ -154,13 +154,13 @@ Implementation order. Each task should be completable and testable independently
 - On submit: emit `update-settings` to server (only allowed when session is idle)
 - **Done when:** Changing format toggle updates disk estimate instantly; settings persist to server
 
-### T-23 · Dashboard — gap log panel
+### T-23 · Dashboard — gap log panel ✅
 - Scrollable list, newest first
 - On `gap-started`: add entry "⚠ Disconnected at HH:MM:SS"
 - On `gap-ended`: update entry "⚠ Gap: HH:MM:SS → HH:MM:SS (N frames missed)"
 - **Done when:** Disconnect/reconnect cycle produces a correct log entry in the dashboard
 
-### T-24 · Dashboard — session summary
+### T-24 · Dashboard — session summary ✅
 - On `session-ended` event: show summary panel
   - Duration, frames captured, frames expected, number of gaps
 - **Done when:** Summary appears after a session is stopped
@@ -169,12 +169,12 @@ Implementation order. Each task should be completable and testable independently
 
 ## Phase 5 — Scheduled Sessions
 
-### T-25 · Auto-start at scheduled time
+### T-25 · Auto-start at scheduled time ✅
 - Server checks `session.scheduledStart` every minute (or uses `setTimeout` to the exact time)
 - If current time matches and no session is running: auto-start
 - **Done when:** Setting start time to 1 minute in the future auto-starts the session
 
-### T-26 · Auto-stop at scheduled end time
+### T-26 · Auto-stop at scheduled end time ✅
 - During a running session: if current time reaches `session.scheduledEnd`, auto-stop
 - **Done when:** Setting end time to 1 minute after start auto-stops the session
 
@@ -182,17 +182,17 @@ Implementation order. Each task should be completable and testable independently
 
 ## Phase 6 — Polish & Docs
 
-### T-27 · `/latest-frame` HTTP endpoint
+### T-27 · `/latest-frame` HTTP endpoint ✅
 - `GET /latest-frame`: serves the most recently saved frame file
 - Returns 404 if no frame has been saved yet
 - **Done when:** URL returns the most recent frame image
 
-### T-28 · Estimated disk usage in settings
+### T-28 · Estimated disk usage in settings ✅
 - Show running total of actual bytes written in the stats panel (not just estimate)
 - Update on each `frame-saved` event
 - **Done when:** Actual disk usage counter visible and incrementing in dashboard
 
-### T-29 · README
+### T-29 · README ✅
 - Setup instructions (Node version, `npm install`, `node server.js`)
 - WiFi requirement note
 - How to open the dashboard and scan QR code
