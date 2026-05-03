@@ -1,15 +1,15 @@
-- [ ] Generate `public/nosleep.mp4` using ffmpeg: `ffmpeg -f lavfi -i color=c=black:size=2x2:duration=1 -c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p -an -movflags +faststart public/nosleep.mp4` (2×2 minimum for H.264 macroblock alignment)
-- [ ] Confirm `public/nosleep.mp4` exists and is larger than 0 bytes
-- [ ] Confirm the MP4 is playable: open `http://localhost:3000/nosleep.mp4` in a browser and verify it plays (even if it appears as a tiny black square)
-- [ ] Add a `<video id="nosleep">` element to `public/phone.html` with `loop`, `muted`, `playsinline`, and `src="/nosleep.mp4"` attributes
-- [ ] Style `#nosleep` to be visually hidden: `position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none`
-- [ ] In the `armCamera()` function, add a `nosleep.play().catch(...)` call as the very first line — before any `await`
-- [ ] Add a `.catch((err) => console.warn('NoSleep play failed:', err))` to the `nosleep.play()` call
-- [ ] Add a comment above the `nosleep.play()` line explaining why it must come before `await` (user-gesture timing)
-- [ ] Restart the server and load `/phone` on the iPhone in Safari
-- [ ] Tap "Arm Camera" and confirm both the camera feed appears and no console errors are shown in Web Inspector
-- [ ] Confirm `nosleep.mp4` is fetched with HTTP 200 in the Network tab of Web Inspector
-- [ ] Confirm the `#nosleep` video element shows as `paused: false` in the DOM inspector (i.e., it is playing)
-- [ ] Lock the phone's screen manually — then unlock — and confirm the camera page is still active
-- [ ] Leave the phone armed for 5 minutes without touching it and confirm the screen has not dimmed or locked
-- [ ] Confirm that if `nosleep.mp4` fails to load (e.g., rename it temporarily), the camera still works and only a console warning appears — not a user-visible error
+- [x] Generate `public/nosleep.mp4` using ffmpeg: `ffmpeg -f lavfi -i color=c=black:size=2x2:duration=1 -c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p -an -movflags +faststart public/nosleep.mp4` (2×2 minimum for H.264 macroblock alignment)
+- [x] Confirm `public/nosleep.mp4` exists and is larger than 0 bytes (1.8 KB)
+- [ ] Confirm the MP4 is playable: open `/nosleep.mp4` in a browser and verify it plays ← MANUAL: requires mkcert certs
+- [x] Add a `<video id="nosleep">` element to `public/phone.html` with `loop`, `muted`, `playsinline`, and `src="/nosleep.mp4"` attributes
+- [x] Style `#nosleep` to be visually hidden: `position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none`
+- [x] In the `armCamera()` function, add a `nosleep.play().catch(...)` call as the very first line — before any `await`
+- [x] Add a `.catch((err) => console.warn('NoSleep play failed:', err))` to the `nosleep.play()` call
+- [x] Add a comment above the `nosleep.play()` line explaining why it must come before `await` (user-gesture timing)
+- [ ] Restart the server and load `/phone` on the iPhone in Safari ← MANUAL: requires mkcert certs + physical device
+- [ ] Tap "Arm Camera" and confirm both the camera feed appears and no console errors are shown in Web Inspector ← MANUAL
+- [ ] Confirm `nosleep.mp4` is fetched with HTTP 200 in the Network tab of Web Inspector ← MANUAL
+- [ ] Confirm the `#nosleep` video element shows as `paused: false` in the DOM inspector (i.e., it is playing) ← MANUAL
+- [ ] Lock the phone's screen manually — then unlock — and confirm the camera page is still active ← MANUAL
+- [ ] Leave the phone armed for 5 minutes without touching it and confirm the screen has not dimmed or locked ← MANUAL
+- [ ] Confirm that if `nosleep.mp4` fails to load, the camera still works and only a console warning appears ← MANUAL

@@ -41,7 +41,7 @@ Implementation order. Each task should be completable and testable independently
 - Connect to Socket.IO server
 - **Done when:** Page loads in Safari without errors; button visible
 
-### T-06 · Camera access
+### T-06 · Camera access ✅
 - On "Arm Camera" tap: call `getUserMedia({ video: { facingMode: 'environment' }, audio: false })`
 - Pipe stream to a `<video>` element (full viewport, landscape, object-fit: cover)
 - Handle permission denied gracefully (show error message)
