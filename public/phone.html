@@ -47,19 +47,99 @@
       z-index: 10;
     }
 
-    #status {
+    /* Status overlay — shown after arming */
+    #status-overlay {
       display: none;
       position: absolute;
-      bottom: 40px;
+      bottom: 0;
       left: 0;
       right: 0;
-      font-size: 16px;
-      text-align: center;
-      padding: 16px;
-      padding-bottom: calc(16px + env(safe-area-inset-bottom));
+      padding: 12px 16px;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      background: rgba(0,0,0,0.5);
       z-index: 10;
     }
 
+    #status-overlay.visible { display: block; }
+
+    /* Waiting message (shown while session is idle) */
+    #waiting-msg {
+      font-size: 16px;
+      text-align: center;
+    }
+
+    /* Live capture UI (shown while session is running) */
+    #capture-ui {
+      display: none;
+    }
+
+    #capture-ui.visible { display: flex; }
+
+    #capture-ui {
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    /* Connection dot */
+    #status-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: #888;
+    }
+
+    #status-dot.connected    { background: #4caf50; }
+    #status-dot.disconnected { background: #f44336; }
+
+    /* Countdown and last-captured */
+    #countdown, #last-captured {
+      font-size: 15px;
+      white-space: nowrap;
+    }
+
+    /* Stop button */
+    #stop-btn {
+      padding: 8px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      background: #f44336;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    #stop-btn:disabled { opacity: 0.5; }
+
+    /* Frame saved overlay */
+    #frame-saved-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 22px;
+      font-weight: 600;
+      background: rgba(0,0,0,0.6);
+      padding: 12px 28px;
+      border-radius: 10px;
+      opacity: 0;
+      transition: opacity 1.5s ease;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    #frame-saved-overlay.visible {
+      opacity: 1;
+      transition: none;
+    }
+
+    /* Portrait overlay */
     #portrait-overlay {
       display: none;
       position: fixed;
@@ -75,9 +155,7 @@
     }
 
     @media (orientation: portrait) {
-      #portrait-overlay {
-        display: flex;
-      }
+      #portrait-overlay { display: flex; }
     }
   </style>
 </head>
@@ -88,23 +166,77 @@
          style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;"></video>
   <video id="camera" autoplay muted playsinline></video>
   <canvas id="capture-canvas" style="display:none;"></canvas>
+
   <button id="arm-btn">Arm Camera</button>
-  <div id="status"></div>
+
+  <div id="status-overlay">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+      <span id="status-dot"></span>
+      <span id="waiting-msg">Waiting for session to start…</span>
+    </div>
+    <div id="capture-ui">
+      <span id="countdown">--</span>
+      <span id="last-captured">--</span>
+      <button id="stop-btn">Stop</button>
+    </div>
+  </div>
+
+  <div id="frame-saved-overlay">Frame saved</div>
   <div id="portrait-overlay">↺ Rotate your phone to landscape</div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    let stream = null;
+    let stream    = null;
     let capturing = false;
+
+    let sessionInterval  = null;
+    let countdown        = null;
+    let countdownTimer   = null;
+    let lastCapturedAt   = null;
 
     const video  = document.getElementById('camera');
     const canvas = document.getElementById('capture-canvas');
     const ctx    = canvas.getContext('2d');
 
-    function showStatus(message) {
-      const el = document.getElementById('status');
-      el.textContent = message;
-      el.style.display = 'block';
+    const statusDot          = document.getElementById('status-dot');
+    const countdownEl        = document.getElementById('countdown');
+    const lastCapturedEl     = document.getElementById('last-captured');
+    const frameSavedOverlay  = document.getElementById('frame-saved-overlay');
+    const stopBtn            = document.getElementById('stop-btn');
+    const waitingMsg         = document.getElementById('waiting-msg');
+    const captureUi          = document.getElementById('capture-ui');
+    const statusOverlay      = document.getElementById('status-overlay');
+
+    function showStatus() {
+      statusOverlay.classList.add('visible');
+    }
+
+    function showWaiting() {
+      waitingMsg.style.display = 'block';
+      captureUi.classList.remove('visible');
+    }
+
+    function showCaptureUi() {
+      waitingMsg.style.display = 'none';
+      captureUi.classList.add('visible');
+      stopBtn.disabled = false;
+    }
+
+    function flashFrameSaved() {
+      frameSavedOverlay.classList.remove('visible');
+      void frameSavedOverlay.offsetWidth; // force reflow to restart transition
+      frameSavedOverlay.classList.add('visible');
+      setTimeout(() => frameSavedOverlay.classList.remove('visible'), 50);
+    }
+
+    function startCountdown(seconds) {
+      clearInterval(countdownTimer);
+      countdown = seconds;
+      countdownEl.textContent = `Next: ${countdown}s`;
+      countdownTimer = setInterval(() => {
+        countdown = Math.max(0, countdown - 1);
+        countdownEl.textContent = `Next: ${countdown}s`;
+      }, 1000);
     }
 
     async function armCamera() {
@@ -112,7 +244,8 @@
       document.getElementById('nosleep').play().catch((err) => console.warn('NoSleep play failed:', err));
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showStatus('Camera not available — page must be loaded over HTTPS. See the README for mkcert setup instructions.');
+        waitingMsg.textContent = 'Camera not available — page must be loaded over HTTPS. See the README for mkcert setup instructions.';
+        showStatus();
         return;
       }
       try {
@@ -120,32 +253,64 @@
           video: { facingMode: 'environment' },
           audio: false,
         });
-        const video = document.getElementById('camera');
         video.srcObject = stream;
         await video.play().catch(() => {});
         document.getElementById('arm-btn').style.display = 'none';
         video.style.display = 'block';
+        showStatus();
+        showWaiting();
       } catch (err) {
-        showStatus(`Camera access denied. Please allow camera permission in Settings and reload. (${err.message})`);
+        waitingMsg.textContent = `Camera access denied. Please allow camera permission in Settings and reload. (${err.message})`;
+        showStatus();
       }
     }
 
     document.getElementById('arm-btn').addEventListener('click', armCamera);
 
+    stopBtn.addEventListener('click', () => {
+      stopBtn.disabled = true;
+      socket.emit('stop-session');
+    });
+
     const socket = io();
 
     socket.on('connect', () => {
       console.log('Phone connected', socket.id);
-      showStatus('Waiting for session to start…');
+      statusDot.className = 'connected';
     });
 
     socket.on('disconnect', () => {
       console.log('Phone disconnected');
+      statusDot.className = 'disconnected';
+    });
+
+    socket.on('status-update', (session) => {
+      if (session.interval) sessionInterval = session.interval;
+      if (session.status === 'idle') {
+        showWaiting();
+      } else if (session.status === 'running') {
+        showCaptureUi();
+      }
+    });
+
+    socket.on('session-started', (session) => {
+      if (session.interval) sessionInterval = session.interval;
+      showCaptureUi();
+    });
+
+    socket.on('session-ended', () => {
+      clearInterval(countdownTimer);
+      countdownEl.textContent = '--';
+      showWaiting();
     });
 
     socket.on('capture', ({ format }) => {
+      // Skip capture if phone is in portrait orientation
+      if (window.matchMedia('(orientation: portrait)').matches) return;
       if (capturing) return;
       if (video.readyState < 2) return;
+
+      if (sessionInterval) startCountdown(sessionInterval);
 
       capturing = true;
       canvas.width  = video.videoWidth;
@@ -174,6 +339,13 @@
       } else {
         canvas.toBlob(onBlob, mimeType);
       }
+    });
+
+    socket.on('frame-ack', ({ timestamp }) => {
+      const t = new Date(timestamp);
+      const hms = t.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      lastCapturedEl.textContent = `Last: ${hms}`;
+      flashFrameSaved();
     });
   </script>
 </body>

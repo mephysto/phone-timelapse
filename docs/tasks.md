@@ -52,7 +52,7 @@ Implementation order. Each task should be completable and testable independently
 - Generate or include a minimal valid MP4 file for `public/nosleep.mp4`
 - **Done when:** Screen does not dim/lock during an extended session on the phone (test 5 min)
 
-### T-08 · Frame capture and send
+### T-08 · Frame capture and send ✅
 - Listen for `capture` event from server
 - Snapshot `<video>` onto hidden `<canvas>` at video's natural dimensions
 - `canvas.toBlob()` → send binary via `socket.emit('frame', buffer)`

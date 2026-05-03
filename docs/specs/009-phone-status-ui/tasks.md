@@ -1,29 +1,29 @@
-- [ ] Add a connection status dot element to `phone.html` with an `id` of `status-dot`
-- [ ] Add a countdown display element to `phone.html` with an `id` of `countdown`, default text "--"
-- [ ] Add a last-captured timestamp element to `phone.html` with an `id` of `last-captured`, default text "--"
-- [ ] Add a "Frame saved" overlay element to `phone.html` with an `id` of `frame-saved-overlay`
-- [ ] Add a Stop button to `phone.html` with an `id` of `stop-btn`
-- [ ] Write CSS for the green connected state of `#status-dot` (e.g. class `connected`)
-- [ ] Write CSS for the red disconnected state of `#status-dot` (e.g. class `disconnected`)
-- [ ] Write CSS opacity transition for `#frame-saved-overlay` so it fades out over 1.5 seconds
-- [ ] In `phone.js`, declare `countdown`, `countdownTimer`, and `lastCapturedAt` variables
-- [ ] Update `#status-dot` to the connected class on Socket.IO `connect` event
-- [ ] Update `#status-dot` to the disconnected class on Socket.IO `disconnect` event
-- [ ] In the `capture` event listener, read the interval from the payload or derive it from context
-- [ ] Clear the existing `countdownTimer` on each `capture` event
-- [ ] Reset `countdown` to the interval value and update `#countdown` text on each `capture` event
-- [ ] Start a new `setInterval` that decrements `countdown` every second and updates `#countdown`
-- [ ] Stop decrementing at 0 (do not show negative values)
-- [ ] In a `frame-ack` listener, extract the `timestamp` field and format it as `HH:MM:SS`
-- [ ] Update `#last-captured` text to "Last: HH:MM:SS" on `frame-ack`
-- [ ] Trigger the Frame saved overlay animation on `frame-ack` (force reflow between class removals to restart the transition)
-- [ ] Add a click listener to `#stop-btn` that emits `stop-session` to the server
-- [ ] Disable `#stop-btn` immediately after it is clicked to prevent duplicate emits
-- [ ] Add a `<div id="waiting-msg">` inside the status overlay with text "Waiting for session to start…"
-- [ ] On `status-update`, show `#waiting-msg` and hide countdown/last-captured/stop-btn if `session.status === 'idle'`
-- [ ] On `session-started` event, hide `#waiting-msg` and show countdown/last-captured/stop-btn
-- [ ] Add a guard in the `capture` listener: if `window.matchMedia('(orientation: portrait)').matches`, skip the capture (do not set `capturing = true`, do not draw)
-- [ ] Verify the countdown does not go below 0
-- [ ] Verify the frame-saved overlay restarts its fade correctly when two `frame-ack` events arrive within 1.5 seconds of each other
-- [ ] Verify that holding the phone in portrait during an active session skips captures and the portrait overlay is visible
-- [ ] Verify rotating to landscape resumes capture correctly on the next `capture` event
+- [x] Add a connection status dot element to `phone.html` with an `id` of `status-dot`
+- [x] Add a countdown display element to `phone.html` with an `id` of `countdown`, default text "--"
+- [x] Add a last-captured timestamp element to `phone.html` with an `id` of `last-captured`, default text "--"
+- [x] Add a "Frame saved" overlay element to `phone.html` with an `id` of `frame-saved-overlay`
+- [x] Add a Stop button to `phone.html` with an `id` of `stop-btn`
+- [x] Write CSS for the green connected state of `#status-dot` (class `connected`)
+- [x] Write CSS for the red disconnected state of `#status-dot` (class `disconnected`)
+- [x] Write CSS opacity transition for `#frame-saved-overlay` so it fades out over 1.5 seconds
+- [x] In the page script, declare `countdown`, `countdownTimer`, `lastCapturedAt`, `sessionInterval` variables
+- [x] Update `#status-dot` to the connected class on Socket.IO `connect` event
+- [x] Update `#status-dot` to the disconnected class on Socket.IO `disconnect` event
+- [x] In the `capture` event listener, use sessionInterval (from status-update) to reset countdown
+- [x] Clear the existing `countdownTimer` on each `capture` event
+- [x] Reset `countdown` to the interval value and update `#countdown` text on each `capture` event
+- [x] Start a new `setInterval` that decrements `countdown` every second and updates `#countdown`
+- [x] Stop decrementing at 0 (do not show negative values)
+- [x] In a `frame-ack` listener, extract the `timestamp` field and format it as `HH:MM:SS`
+- [x] Update `#last-captured` text to "Last: HH:MM:SS" on `frame-ack`
+- [x] Trigger the Frame saved overlay animation on `frame-ack` (force reflow between class removals to restart the transition)
+- [x] Add a click listener to `#stop-btn` that emits `stop-session` to the server
+- [x] Disable `#stop-btn` immediately after it is clicked to prevent duplicate emits
+- [x] Add a `#waiting-msg` div inside the status overlay with text "Waiting for session to start…"
+- [x] On `status-update`, show `#waiting-msg` and hide countdown/last-captured/stop-btn if `session.status === 'idle'`
+- [x] On `session-started` event, hide `#waiting-msg` and show countdown/last-captured/stop-btn
+- [x] Add a guard in the `capture` listener: if `window.matchMedia('(orientation: portrait)').matches`, skip the capture
+- [ ] Verify the countdown does not go below 0 ← MANUAL: requires live server + device
+- [ ] Verify the frame-saved overlay restarts its fade correctly when two `frame-ack` events arrive within 1.5 seconds ← MANUAL
+- [ ] Verify that holding the phone in portrait during an active session skips captures ← MANUAL
+- [ ] Verify rotating to landscape resumes capture correctly on the next `capture` event ← MANUAL
