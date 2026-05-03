@@ -25,7 +25,7 @@ Implementation order. Each task should be completable and testable independently
 - Expose IP as a server-side config value for QR code generation
 - **Done when:** Terminal shows correct local IP on startup
 
-### T-04 · QR code endpoint
+### T-04 · QR code endpoint ✅
 - `GET /qr` generates and serves a QR code PNG for `http://[LOCAL-IP]:3000/phone`
 - Uses the `qrcode` npm package
 - **Done when:** Visiting `/qr` in the browser shows a scannable QR code that opens the correct URL
@@ -34,7 +34,7 @@ Implementation order. Each task should be completable and testable independently
 
 ## Phase 2 — Phone Page
 
-### T-05 · Phone page shell (`public/phone.html`)
+### T-05 · Phone page shell (`public/phone.html`) ✅
 - Full-viewport HTML page
 - "Arm Camera" button, centred
 - Minimal status overlay (hidden initially)

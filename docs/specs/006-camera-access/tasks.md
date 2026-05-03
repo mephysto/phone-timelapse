@@ -1,22 +1,22 @@
-- [ ] Add a `<video id="camera">` element to `public/phone.html` with attributes `autoplay`, `muted`, and `playsinline`
-- [ ] Set the video element's initial style to `display: none` and position it to cover the full viewport (`position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover`)
-- [ ] Write an `armCamera()` async function in the page script
-- [ ] Inside `armCamera()`, call `navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })`
-- [ ] Assign the returned stream to `document.getElementById('camera').srcObject`
-- [ ] Call `video.play()` and await it (or attach `.catch()`) to handle autoplay errors
-- [ ] After the stream starts, hide `#arm-btn` by setting `style.display = 'none'`
-- [ ] After the stream starts, show `#camera` by setting `style.display = 'block'`
-- [ ] Add a try/catch around the `getUserMedia` call
-- [ ] In the catch block, call a `showStatus(message)` helper that sets `#status` text and makes it visible
-- [ ] Write the `showStatus(message)` helper function
-- [ ] Attach `armCamera` as the `click` event listener on `#arm-btn` (not called on page load)
-- [ ] Add a guard at the top of `armCamera()`: if `navigator.mediaDevices` is undefined, call `showStatus('Camera API not available — HTTPS required')` and return
-- [ ] Add a `<div id="portrait-overlay">` to `phone.html` containing "↺ Rotate your phone to landscape" text
-- [ ] Add CSS: `@media (orientation: portrait) { #portrait-overlay { display: flex; } }` and hide it in landscape by default
-- [ ] Style `#portrait-overlay` to cover the full viewport with a dark background, large centred text
-- [ ] Confirm mkcert certs are in place (see T-02) and load `/phone` on the iPhone over HTTPS
-- [ ] Tap "Arm Camera" and confirm the iOS permission prompt appears
-- [ ] Grant permission and confirm the rear camera feed fills the screen
-- [ ] Confirm the "Arm Camera" button disappears after the feed starts
-- [ ] Reload the page, deny permission, and confirm an error message appears without the app crashing
-- [ ] Open Safari Web Inspector and confirm no unhandled Promise rejections appear in the console
+- [x] Add a `<video id="camera">` element to `public/phone.html` with attributes `autoplay`, `muted`, and `playsinline`
+- [x] Set the video element's initial style to `display: none` and position it to cover the full viewport (`position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover`)
+- [x] Write an `armCamera()` async function in the page script
+- [x] Inside `armCamera()`, call `navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false })`
+- [x] Assign the returned stream to `document.getElementById('camera').srcObject`
+- [x] Call `video.play()` and await it (or attach `.catch()`) to handle autoplay errors
+- [x] After the stream starts, hide `#arm-btn` by setting `style.display = 'none'`
+- [x] After the stream starts, show `#camera` by setting `style.display = 'block'`
+- [x] Add a try/catch around the `getUserMedia` call
+- [x] In the catch block, call a `showStatus(message)` helper that sets `#status` text and makes it visible
+- [x] Write the `showStatus(message)` helper function
+- [x] Attach `armCamera` as the `click` event listener on `#arm-btn` (not called on page load)
+- [x] Add a guard at the top of `armCamera()`: if `navigator.mediaDevices` is undefined, call `showStatus('Camera not available — page must be loaded over HTTPS. See the README for mkcert setup instructions.')` and return
+- [x] Update `#portrait-overlay` text to "↺ Rotate your phone to landscape"
+- [x] Confirm CSS `@media (orientation: portrait)` shows overlay and landscape hides it (already in place from T-05)
+- [x] Style `#portrait-overlay` with `font-size: 28px`, full viewport coverage, dark background, centred text
+- [ ] Confirm mkcert certs are in place and load `/phone` on the iPhone over HTTPS ← MANUAL: requires mkcert certs
+- [ ] Tap "Arm Camera" and confirm the iOS permission prompt appears ← MANUAL: requires physical device
+- [ ] Grant permission and confirm the rear camera feed fills the screen ← MANUAL: requires physical device
+- [ ] Confirm the "Arm Camera" button disappears after the feed starts ← MANUAL: requires physical device
+- [ ] Reload the page, deny permission, and confirm an error message appears without the app crashing ← MANUAL: requires physical device
+- [ ] Open Safari Web Inspector and confirm no unhandled Promise rejections appear in the console ← MANUAL: requires physical device
