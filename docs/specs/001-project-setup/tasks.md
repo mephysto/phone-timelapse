@@ -1,13 +1,13 @@
-- [ ] Open `package.json` (already present as untracked file) and add `description`, `version`, and confirm or set the module system (`"type"` field or its absence for CommonJS)
-- [ ] Add `"start": "node server.js"` to the `scripts` section of `package.json`
-- [ ] Add `"dev": "node --watch server.js"` to the `scripts` section of `package.json`
-- [ ] Add `express`, `socket.io`, and `qrcode` to the `dependencies` section of `package.json` with appropriate version ranges
-- [ ] Run `npm install` and verify it exits with code 0
-- [ ] Confirm `node_modules/` was created and contains `express`, `socket.io`, and `qrcode` subdirectories
-- [ ] Create the `public/` directory at the project root
-- [ ] Create the `output/` directory at the project root (or add logic to `server.js` later to create it on startup — document the decision here)
-- [ ] Create the `docs/` directory at the project root (already exists if specs were written first)
-- [ ] Create `.gitignore` at the project root with entries for `node_modules/` and `output/`
-- [ ] Verify `git status` does not show `node_modules/` or `output/` as untracked
-- [ ] Verify `npm run start` fails gracefully (e.g., "Cannot find module './server.js'") rather than with an npm script error, confirming the script is wired correctly
-- [ ] Verify `npm run dev` behaves the same way (fails on missing `server.js`, not on an unknown script)
+- [x] Open `package.json` (already present as untracked file) and add `description`, `version`, and confirm or set the module system (`"type"` field or its absence for CommonJS)
+- [x] Add `"start": "node server.js"` to the `scripts` section of `package.json`
+- [x] Add `"dev": "node --watch server.js"` to the `scripts` section of `package.json`
+- [x] Add `express`, `socket.io`, and `qrcode` to the `dependencies` section of `package.json` with appropriate version ranges
+- [x] Run `npm install` and verify it exits with code 0
+- [x] Confirm `node_modules/` was created and contains `express`, `socket.io`, and `qrcode` subdirectories
+- [x] Create the `public/` directory at the project root
+- [x] Create the `output/` directory at the project root (decision: created with `output/.gitkeep` so folder is tracked in git; contents ignored via `output/*` in `.gitignore`)
+- [x] Create the `docs/` directory at the project root (already exists if specs were written first)
+- [x] Create `.gitignore` at the project root with entries for `node_modules/`, `package-lock.json`, and `output/*` (with `!output/.gitkeep`)
+- [x] Verify `git status` does not show `node_modules/` or `output/` as untracked (node_modules ignored; output/.gitkeep is untracked but not ignored — correct)
+- [x] Verify `npm run start` fails gracefully (e.g., "Cannot find module './server.js'") rather than with an npm script error, confirming the script is wired correctly
+- [x] Verify `npm run dev` behaves the same way (fails on missing `server.js`, not on an unknown script)
