@@ -6,7 +6,7 @@ Implementation order. Each task should be completable and testable independently
 
 ## Phase 1 — Server Foundation
 
-### T-01 · Project setup
+### T-01 · Project setup ✅
 - Update `package.json` with description, scripts (`start`, `dev`), and dependencies
 - Install: `express`, `socket.io`, `qrcode`
 - Create folder structure: `public/`, `output/` (gitignored), `docs/`
