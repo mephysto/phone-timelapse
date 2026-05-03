@@ -1,12 +1,12 @@
-- [ ] Add `const QRCode = require('qrcode')` to `server.js`
-- [ ] Add a `GET /qr` route handler to the Express app, registered after `express.static`
-- [ ] Inside the handler, construct `phoneUrl` as `http://${LOCAL_IP}:${PORT}/phone`
-- [ ] Call `QRCode.toBuffer(phoneUrl)` and await the result
-- [ ] Set the response `Content-Type` header to `image/png`
-- [ ] Send the PNG buffer as the response body using `res.send(buffer)`
-- [ ] Add a try/catch block that responds with HTTP 500 and a plain-text error message if `toBuffer` throws
-- [ ] Restart the server and visit `http://localhost:3000/qr` in the browser
-- [ ] Confirm the browser displays a QR code image (not a download prompt, not a blank page)
-- [ ] Confirm the response `Content-Type` is `image/png` (check browser DevTools Network tab)
-- [ ] Scan the QR code with the iPhone camera and confirm the suggested URL matches `http://[LOCAL-IP]:3000/phone`
-- [ ] Tap the URL suggestion and confirm `phone.html` (or the placeholder) loads in Safari
+- [x] Add `const QRCode = require('qrcode')` to `server.js`
+- [x] Add a `GET /qr` route handler to the Express app, registered after `express.static`
+- [x] Inside the handler, construct `phoneUrl` as `https://${LOCAL_IP}:${PORT}/phone` (https:// required for iOS camera access)
+- [x] Call `QRCode.toBuffer(phoneUrl)` and await the result
+- [x] Set the response `Content-Type` header to `image/png`
+- [x] Send the PNG buffer as the response body using `res.send(buffer)`
+- [x] Add a try/catch block that responds with HTTP 500 and a plain-text error message if `toBuffer` throws
+- [ ] Restart the server and visit `https://localhost:3000/qr` in the browser ← MANUAL: requires mkcert certs
+- [ ] Confirm the browser displays a QR code image (not a download prompt, not a blank page) ← MANUAL: requires mkcert certs
+- [ ] Confirm the response `Content-Type` is `image/png` (check browser DevTools Network tab) ← MANUAL: requires mkcert certs
+- [ ] Scan the QR code with the iPhone camera and confirm the suggested URL matches `https://[LOCAL-IP]:3000/phone` ← MANUAL: requires physical device + mkcert certs
+- [ ] Tap the URL suggestion and confirm `phone.html` (or the placeholder) loads in Safari ← MANUAL: requires physical device + mkcert certs

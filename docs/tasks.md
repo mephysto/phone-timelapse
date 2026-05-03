@@ -13,13 +13,13 @@ Implementation order. Each task should be completable and testable independently
 - Add `.gitignore` (node_modules, output/)
 - **Done when:** `npm install` runs clean
 
-### T-02 · Basic Express + Socket.IO server
+### T-02 · Basic Express + Socket.IO server ✅
 - `server.js`: Express serves `public/` as static files
 - Socket.IO attached to HTTP server
 - Server listens on port 3000
 - **Done when:** `node server.js` starts without errors; `http://localhost:3000` returns a file
 
-### T-03 · Local IP detection
+### T-03 · Local IP detection ✅
 - On startup, detect the machine's local IPv4 address using the `os` module
 - Print to terminal: `Dashboard: http://[IP]:3000` and `Phone: http://[IP]:3000/phone`
 - Expose IP as a server-side config value for QR code generation

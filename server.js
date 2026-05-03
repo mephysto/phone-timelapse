@@ -2,6 +2,7 @@ const express = require('express');
 const https = require('https');
 const fs = require('fs');
 const os = require('os');
+const QRCode = require('qrcode');
 const { Server } = require('socket.io');
 
 function getLocalIp() {
@@ -41,6 +42,17 @@ const server = https.createServer({ key, cert }, app);
 const io = new Server(server, { maxHttpBufferSize: 10e6 });
 
 app.use(express.static('public'));
+
+app.get('/qr', async (req, res) => {
+  const phoneUrl = `https://${LOCAL_IP}:${PORT}/phone`;
+  try {
+    const buffer = await QRCode.toBuffer(phoneUrl);
+    res.setHeader('Content-Type', 'image/png');
+    res.send(buffer);
+  } catch (err) {
+    res.status(500).type('text/plain').send(`QR generation failed: ${err.message}`);
+  }
+});
 
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
