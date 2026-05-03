@@ -81,7 +81,7 @@ Implementation order. Each task should be completable and testable independently
 - Validate that a session isn't started if one is already running
 - **Done when:** State transitions work correctly in isolation (can be tested with console logs)
 
-### T-12 · Capture scheduler
+### T-12 · Capture scheduler ✅
 - On `startSession()`: start `setInterval` emitting `capture` to the phone socket at `session.interval` seconds
 - Track expected frame count
 - On `stopSession()`: clear interval

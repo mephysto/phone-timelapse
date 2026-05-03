@@ -2,6 +2,7 @@ const express = require('express');
 const https = require('https');
 const fs = require('fs');
 const os = require('os');
+const path = require('path');
 const QRCode = require('qrcode');
 const { Server } = require('socket.io');
 
@@ -53,8 +54,9 @@ const session = {
   lastCaptureAt:  null,     // Date | null
 };
 
-let phoneSocket  = null;
-let captureTimer = null;
+let phoneSocket     = null;
+let captureTimer    = null;
+let latestFramePath = null;
 
 function startCaptureScheduler() {
   if (captureTimer !== null) return;
@@ -131,6 +133,68 @@ io.on('connection', (socket) => {
   if (referer.endsWith('/phone')) {
     phoneSocket = socket;
     console.log('Phone socket registered:', socket.id);
+
+    socket.on('frame', async (data) => {
+      if (session.status !== 'running') return;
+
+      const frameNum  = session.frameCount + 1;
+      const timestamp = new Date().toISOString();
+      const padded    = String(frameNum).padStart(4, '0');
+      const filePath  = path.join(session.outputDir, `frame_${padded}.${session.format}`);
+
+      try {
+        await fs.promises.writeFile(filePath, data);
+        session.frameCount    = frameNum;
+        session.lastCaptureAt = new Date(timestamp);
+        latestFramePath       = filePath;
+
+        socket.emit('frame-ack', { frameNum, timestamp });
+        io.to('dashboard').emit('frame-saved', { frameNum, timestamp, path: filePath });
+      } catch (err) {
+        console.error('Failed to write frame:', err.message);
+      }
+    });
+
+    socket.on('stop-session', () => {
+      const result = stopSession();
+      if (result.ok) {
+        io.to('dashboard').emit('session-ended', getSession());
+      }
+    });
+
+  } else {
+    socket.join('dashboard');
+    socket.emit('status-update', getSession());
+
+    socket.on('start-session', (options = {}) => {
+      const result = startSession(options);
+      if (result.ok) {
+        io.emit('session-started', getSession());
+      } else {
+        socket.emit('session-error', result);
+      }
+    });
+
+    socket.on('stop-session', () => {
+      const result = stopSession();
+      if (result.ok) {
+        io.emit('session-ended', getSession());
+      } else {
+        socket.emit('session-error', result);
+      }
+    });
+
+    socket.on('update-settings', (settings) => {
+      if (session.status === 'running') {
+        socket.emit('session-error', { ok: false, reason: 'Cannot change settings while session is running' });
+        return;
+      }
+      if (settings.interval  !== undefined) session.interval        = Number(settings.interval);
+      if (settings.format    !== undefined) session.format          = settings.format;
+      if (settings.scheduledStart !== undefined) session.scheduledStart = settings.scheduledStart;
+      if (settings.scheduledEnd   !== undefined) session.scheduledEnd   = settings.scheduledEnd;
+      io.to('dashboard').emit('status-update', getSession());
+    });
   }
 
   socket.on('disconnect', () => {
